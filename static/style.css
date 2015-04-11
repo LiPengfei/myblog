@@ -50,7 +50,7 @@ section#posts header ul, section#content header ul {
     padding: 0;
 }
 
-section#posts header ul li, section#content header ul li, section#page_header nav ul li{
+section#posts header ul li, section#content footer ul li, section#page_header nav ul li{
     padding: 0;
     margin: 0 20px 0 0;
     display: inline;
@@ -64,14 +64,13 @@ header#page_header nav ul li, footer#page_footer nav ul li{
 
 div#logo h1 {
     float: left;
-    width: 32%;
 }
 
 div#logo p {
-    float: right;
-    width: 67%;
+    float: left;
     padding-top: 25px;
     line-height: 35px;
+    margin-left: 10px;
 }
 
 div#logo nav {
@@ -112,4 +111,15 @@ section#sidebar{
     margin-top: 30px;
     float: right;
     width: 20%;
+}
+
+article.comment {
+    margin-bottom: 30px;
+}
+
+p.commenter{
+    color: gray;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    text-align: right;
 }

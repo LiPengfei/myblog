@@ -10,9 +10,9 @@
         <header id="page_header">
             <div id = "logo">
                 <h1>WoodhouseSo Blog!</h1>
-                <p>天街小雨润如酥，草色遥看近却无</p>
+                <p>{% block signin %} 天街小雨润如酥，草色遥看近却无 {% end %}</p>
             <nav>
-                <ul>   <!-- todo need to read from db -->
+                <ul>
                     <li><a href="/">最近发表</a></li>
                     <li><a href="archives">个人简历</a></li>
                 </ul>
@@ -57,33 +57,8 @@
                 </ul>
             </nav>
         </section>
-        <section id="posts">
-			{% for article in articles %}
-			<article class="post">
-				<header>
-					{% autoescape None %}
-					<h2> {{ article["title"] }}</h2>
-					<p>
-						{% if article.has_key("updated_date") %}
-						Updated by {{ article["author"] }} on
-						<time>{{ article["updated_date"]}}</time>
-						{% else %}
-						Posted by {{ article["author"] }} on
-						<time>{{ article["posted_date"] }}</time>
-						{% end %}
-					</p>
-				</header>
-				{% if article.has_key("aside") %}
-				<aside> {{ article["aside"] }} </aside>
-				{% end %}
-				{{ article["content"] }}
-				<footer>
-					<p><a href="{{ article["href"] }}"> <i>{{ article["comments"] }} Comments</i></a></p>
-				</footer>
-				<hr class="article_line"/>
-			</article>
-			{% end %}
-		</section>
+
+		{% block articles_content %} {% end %}
 
         <footer id="page_footer">
             <p>&copy; 2010 AwesomeCo.</p>

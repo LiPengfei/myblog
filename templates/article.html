@@ -1,0 +1,61 @@
+{% extends frame.html %}
+
+{% block signin%}
+    {% raw signin %}
+{% end %}
+
+{% block articles_content %}
+<section id = "content">
+    <header>
+    </header>
+    <article class="post">
+        <header>
+            <h2>{% raw article["title"] %}</h2>
+            <p>
+                {% if article.has_key("updated_date") %}
+                Updated by {% raw article["author"] %} on
+                <time>{{ article["updated_date"] }}</time>
+                {% else %}
+                Posted by {% raw article["author"] %} on
+                <time>{% raw article["posted_date"] %}</time>
+                {% end %}
+            </p>
+        </header>
+        {% raw article["content"] %}
+        <footer>
+            <nav>
+                <ul>
+                    {% if article.has_key("previous") %}
+                    <li><a href="{% raw article["previous"]["href"] %}"> &lt&lt {%raw article["previous"]["title"] %} </a></li>
+                    {% end %}
+                    <li><a href="contributors">首页</a></li>
+                    {% if article.has_key("next") %}
+                    <li><a href="{% raw article["next"]["href"] %}"> {% raw article["next"]["title"] %} &gt&gt </a></li>
+                    {% end %}
+                </ul>
+            </nav>
+            <section id="comments">
+                <h3>留言</h3>
+                {% if article.has_key("comments") %}
+                {% for comment in article["comments"] %}
+                <article class="comment">
+                    <p>{{ comment["content"] }}</p>
+                    <p class="commenter">Posted by <a>{{ comment["author"] }}</a> on
+                        <time>{{ comment["posted_date"] }}</time>
+                    </p>
+                    <hr class="comment_line"/>
+                </article>
+                {% end %}
+                {% end %}
+            </section>
+            <section id="do_comments">
+                <h3>发表留言</h3>
+                <input type="input" name="name">
+                <input type="input" name="email">
+                <input type="input" name="verify">
+                <input type="input" name="to_comment">
+            </section>
+        </footer>
+    </article>
+</section>
+{% end %}

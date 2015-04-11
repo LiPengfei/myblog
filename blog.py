@@ -7,6 +7,7 @@ import tornado.web
 import tornado.options
 import tornado.ioloop
 import tornado.httpserver
+import random
 
 from tornado.options import options, define
 
@@ -25,7 +26,7 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r"/", HomeHandler),
-            (r"/latest", LatestHandler),
+            (r"/article", ArticleHandler),
         ]
         settings = dict(
             blog_title = u"Hello World!",
@@ -60,6 +61,47 @@ class Application(tornado.web.Application):
             ),
         ]
 
+        self.article = dict(
+                title = "How Many Shoule We Put You Down For ?",
+                posted_date = "October 1st, 2010 at 2:39PM",
+                content = """<p>Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.</p>
+                <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>""",
+                author  = "李鹏飞",
+                previous = dict(
+                    title = "实在是不行",
+                    href = "aaaa",
+                ),
+                next = dict(
+                    title = "实在还是不行",
+                    href = "aaaa",
+                ),
+                comments = [
+                    dict(
+                        author = "lipengfei",
+                        posted_date = "October 1st, 2010 at 2:39PM",
+                        content = "<h1>这个是很牛逼的</h1>",
+                    ),
+                    dict(
+                        author = "lipengfei",
+                        posted_date = "October 1st, 2010 at 2:39PM",
+                        content = "<h>这个是很牛逼的</h>",
+                    ),
+                    dict(
+                        author = "lipengfei",
+                        posted_date = "October 1st, 2010 at 2:39PM",
+                        content = "<h>这个是很牛逼的</h>",
+                    ),
+                ],
+            )
+
+        self.signins = [
+            "天街小雨润如酥，草色遥看近却无",
+            "最是一年春好处， 绝胜烟柳满皇都",
+            "孤舟蓑笠翁，独钓寒江雪",
+            "我住长江头，君住长江尾，日日思君不见君，共饮长江水",
+            "会挽雕弓如满月，西北望，射天狼"
+        ]
+
 class BaseHandler(tornado.web.RequestHandler):
     @property
     def db(self):
@@ -70,11 +112,12 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
     def get(self):
-        self.render("home.html")
+        self.render("home.html", articles = self.application.latests)
 
-class LatestHandler(BaseHandler):
+class ArticleHandler(BaseHandler):
     def get(self):
-        self.render("latest.html", articles = self.application.latests)
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        self.render("article.html", article = self.application.article, signin = signin)
 
 class AuthLogoutHandler(BaseHandler):
     def get(self):
