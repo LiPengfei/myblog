@@ -1,0 +1,115 @@
+body {
+    width: 60%;
+    margin: 15px auto;
+    font: normal 14px  Arial, Helvetica, sans-serif, "宋体";
+}
+
+/* body#article { */
+/*     width: 60%; */
+/*     margin: 15px auto; */
+/*     font: normal 14px  Arial, Helvetica, sans-serif, "宋体"; */
+/* } */
+
+a {
+    color: black;
+}
+a:hover {color: gray;}
+
+p {
+    margin: 0 0 20px 0;
+}
+
+p, li{
+    line-height: 20px;
+}
+
+body header#page_header, footer#page_footer{
+    float: left;
+    width: 100%;
+}
+
+/* body#article header#page_header, footer#page_footer{ */
+/*     margin-left: 20%; */
+/*     width: 100%; */
+/* } */
+
+footer#page_footer{
+    text-align:center;
+    width: 100%;
+}
+
+header#page_header nav ul, footer#page_footer nav ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+section#posts header ul, section#content header ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+section#posts header ul li, section#content header ul li, section#page_header nav ul li{
+    padding: 0;
+    margin: 0 20px 0 0;
+    display: inline;
+}
+
+header#page_header nav ul li, footer#page_footer nav ul li{
+    padding: 0;
+    margin: 0 20px 0 0;
+    display: inline;
+}
+
+div#logo h1 {
+    float: left;
+    width: 32%;
+}
+
+div#logo p {
+    float: right;
+    width: 67%;
+    padding-top: 25px;
+    line-height: 35px;
+}
+
+div#logo nav {
+    float: left;
+    width: 100%;
+}
+
+section#posts{
+    margin-top: 30px;
+    float: left;
+    width: 74%;
+}
+
+section#content{
+    margin-top: 40px;
+    float: left;
+    width: 74%;
+}
+
+section#content nav{
+    text-align: center;
+}
+
+section#read_guide{
+    float: left;
+    width: 20%;
+}
+
+section#posts aside, section#content aside{
+    float: right;
+    width: 35%;
+    margin-left: 5%;
+    font-size: 20px;
+    line-height: 40px;
+}
+
+section#sidebar{
+    margin-top: 30px;
+    float: right;
+    width: 20%;
+}

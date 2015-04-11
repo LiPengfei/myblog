@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="static/style.css" type = "text/css">
+        <script src="static/funny.js" type="text/javascript" charset="utf-8"></script>
+        <title>Woodenhouse's Blog</title>
+    </head>
+    <body id = "index">
+        <header id="page_header">
+            <div id = "logo">
+                <h1>WoodhouseSo Blog!</h1>
+                <p>天街小雨润如酥，草色遥看近却无</p>
+            <nav>
+                <ul>   <!-- todo need to read from db -->
+                    <li><a href="/">最近发表</a></li>
+                    <li><a href="archives">个人简历</a></li>
+                </ul>
+            </nav>
+            </div>
+        </header>
+        <section id="sidebar">
+            <nav>
+                <h3>Categories</h3>
+                <ul>  <!-- todo need to read from db -->
+                    <li><a href="1">玩一下</a>
+                        <ul>
+                            <li><a href="1">玩一下1</a></li>
+                            <li><a href="1">玩一下2</a></li>
+                            <li><a href="1">玩一下3</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="2010/09">Septerber 2009</a></li>
+                    <li><a href="2010/08">August 2010</a></li>
+                    <li><a href="2010/07">July 2010</a></li>
+                    <li><a href="2010/06">June 2010</a></li>
+                    <li><a href="2010/05">May 2010</a></li>
+                    <li><a href="2010/04">April 2010</a></li>
+                    <li><a href="2010/03">March 2010</a></li>
+                    <li><a href="2010/02">February 2010</a></li>
+                    <li><a href="2010/01">January 2010</a></li>
+                </ul>
+            </nav>
+            <nav>
+                <h3>Archives</h3>
+                <ul>  <!-- todo need to read from db -->
+                    <li><a href="2010/10">October 2010</a></li>
+                    <li><a href="2010/09">Septerber 2009</a></li>
+                    <li><a href="2010/08">August 2010</a></li>
+                    <li><a href="2010/07">July 2010</a></li>
+                    <li><a href="2010/06">June 2010</a></li>
+                    <li><a href="2010/05">May 2010</a></li>
+                    <li><a href="2010/04">April 2010</a></li>
+                    <li><a href="2010/03">March 2010</a></li>
+                    <li><a href="2010/02">February 2010</a></li>
+                    <li><a href="2010/01">January 2010</a></li>
+                </ul>
+            </nav>
+        </section>
+        <section id="posts">
+			{% for article in articles %}
+			<article class="post">
+				<header>
+					{% autoescape None %}
+					<h2> {{ article["title"] }}</h2>
+					<p>
+						{% if article.has_key("updated_date") %}
+						Updated by {{ article["author"] }} on
+						<time>{{ article["updated_date"]}}</time>
+						{% else %}
+						Posted by {{ article["author"] }} on
+						<time>{{ article["posted_date"] }}</time>
+						{% end %}
+					</p>
+				</header>
+				{% if article.has_key("aside") %}
+				<aside> {{ article["aside"] }} </aside>
+				{% end %}
+				{{ article["content"] }}
+				<footer>
+					<p><a href="{{ article["href"] }}"> <i>{{ article["comments"] }} Comments</i></a></p>
+				</footer>
+				<hr class="article_line"/>
+			</article>
+			{% end %}
+		</section>
+
+        <footer id="page_footer">
+            <p>&copy; 2010 AwesomeCo.</p>
+            <nav>
+                <ul>
+                    <li><a href="http://awrsomeco.com">Home</a></li>
+                    <li><a href="about" data-width="400" data-height="500" class = 'popup'>About</a></li>
+                    <li><a href="terms.html">Terms of Servrice</a></li>
+                    <li><a href="privacy.html">Privacy</a></li>
+                </ul>
+            </nav>
+        </footer>
+    </body>
+</html>
