@@ -1,0 +1,23 @@
+<article class="post">
+	<header>
+		<h2> {% raw article["title"] %}</h2>
+		<p>
+			{% if article.has_key("updated_date") %}
+			Updated by {% raw article["author"] %} on
+			<time>{% raw article["updated_date"] %}</time>
+			{% else %}
+			Posted by {% raw article["author"] %} on
+			<time>{% raw article["posted_date"] %}</time>
+			{% end %}
+		</p>
+	</header>
+	{% if article.has_key("aside") %}
+	<aside> {% raw article["aside"] %} </aside>
+	{% end %}
+	{% raw article["content"] %}
+	<footer>
+		<p><a href="{% raw article["href"] %}"> <i>{% raw article["comments"] %} Comments</i></a></p>
+	</footer>
+	<hr class="article_line"/>
+</article>
+

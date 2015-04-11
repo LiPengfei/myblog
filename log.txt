@@ -1,0 +1,7 @@
+1. 静态展示页面的设计。
+2. tornado 接入，tornado模板接入，tornado extern 模板接入，tornado ui module 接入。
+3. mongodb 读取接入。
+4. mongodb 存接入。
+5. 安全cookie 接入。
+6. rss feed 接入。
+7. 搜索接入。

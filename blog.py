@@ -32,6 +32,10 @@ class Application(tornado.web.Application):
             blog_title = u"Hello World!",
             template_path = os.path.join(os.path.dirname(__file__), "templates"),
             static_path = os.path.join(os.path.dirname(__file__), "static"),
+            ui_modules = {
+                "art_summary" : ArtSummaryModule,
+                "comment"    : CommentModule,
+            }, # 没有全部都做成ui module。因为不用ui module 功能也实现了。这里这么做只是为了尝试一下 ui module。其效率和效果如何，不知道。
             debug = True,
         )
 
@@ -123,6 +127,14 @@ class AuthLogoutHandler(BaseHandler):
     def get(self):
         self.clear_cookie("blogdemo_user")
         self.redirect(self.get_argument("next", "/"))
+
+class ArtSummaryModule(tornado.web.UIModule):
+    def render(self, article):
+        return self.render_string("modules/art_summary.html", article = article)
+
+class CommentModule(tornado.web.UIModule):
+    def render(self, comment):
+        return self.render_string("modules/comment.html", comment = comment)
 
 if __name__ == "__main__" :
     tornado.options.parse_command_line()

@@ -38,13 +38,7 @@
                 <h3>留言</h3>
                 {% if article.has_key("comments") %}
                 {% for comment in article["comments"] %}
-                <article class="comment">
-                    <p>{{ comment["content"] }}</p>
-                    <p class="commenter">Posted by <a>{{ comment["author"] }}</a> on
-                        <time>{{ comment["posted_date"] }}</time>
-                    </p>
-                    <hr class="comment_line"/>
-                </article>
+                    {% module comment(comment) %}
                 {% end %}
                 {% end %}
             </section>
