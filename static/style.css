@@ -19,11 +19,11 @@ p {
     margin: 0 0 20px 0;
 }
 
-p, li{
+p, li {
     line-height: 20px;
 }
 
-body header#page_header, footer#page_footer{
+body header#page_header, footer#page_footer {
     float: left;
     width: 100%;
 }
@@ -33,12 +33,12 @@ body header#page_header, footer#page_footer{
 /*     width: 100%; */
 /* } */
 
-footer#page_footer{
+footer#page_footer {
     text-align:center;
     width: 100%;
 }
 
-header#page_header nav ul, footer#page_footer nav ul{
+header#page_header nav ul, footer#page_footer nav ul {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -50,13 +50,13 @@ section#posts header ul, section#content header ul {
     padding: 0;
 }
 
-section#posts header ul li, section#content footer ul li, section#page_header nav ul li{
+section#posts header ul li, section#content footer ul li, section#page_header nav ul li {
     padding: 0;
     margin: 0 20px 0 0;
     display: inline;
 }
 
-header#page_header nav ul li, footer#page_footer nav ul li{
+header#page_header nav ul li, footer#page_footer nav ul li {
     padding: 0;
     margin: 0 20px 0 0;
     display: inline;
@@ -78,28 +78,28 @@ div#logo nav {
     width: 100%;
 }
 
-section#posts{
+section#posts {
     margin-top: 30px;
     float: left;
     width: 74%;
 }
 
-section#content{
+section#content {
     margin-top: 30px;
     float: left;
     width: 74%;
 }
 
-section#content nav{
+section#content nav {
     text-align: center;
 }
 
-section#read_guide{
+section#read_guide {
     float: left;
     width: 20%;
 }
 
-section#posts aside, section#content aside{
+section#posts aside, section#content aside {
     float: right;
     width: 35%;
     margin-left: 5%;
@@ -107,19 +107,44 @@ section#posts aside, section#content aside{
     line-height: 40px;
 }
 
-section#sidebar{
+section#sidebar {
     margin-top: 30px;
     float: right;
     width: 20%;
 }
 
+section#content {
+    margin-top: 30px;
+}
+
+footer#page_footer {
+    margin-top: 20px;
+}
+
 article.comment {
     margin-bottom: 30px;
 }
+section#comments {
+    margin-top: 40px;
+}
 
-p.commenter{
+p.commenter {
     color: gray;
     margin-top: 20px;
     margin-bottom: 5px;
     text-align: right;
+}
+
+fieldset ol {
+    list-style: none;
+    padding: 0;
+    margin: 20px;
+}
+
+fieldset ol li {
+    margin: 0 0 9px 0;
+    padding: 0;
+}
+fieldset input, fieldset textarea{
+    display: block;
 }

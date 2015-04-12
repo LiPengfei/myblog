@@ -2,22 +2,22 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="style.css" type = "text/css">
-        <script src="funny.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="stylesheet" href="static/style.css" type = "text/css">
+        <script src="static/funny.js" type="text/javascript" charset="utf-8"></script>
         <!-- <script src="funny.js" type="text/javascript" charset="utf-8"></script> -->
         <title>哈哈</title>  <!-- todo read from db -->
     </head>
     <body id = "article">
         <header id="page_header">
             <div id="logo">
-            <h1>WoodenHouse blog!</h1>
-            <p>天街小雨润如酥，草色遥看近却无</p>
-            <nav>
-                <ul>   <!-- todo need to read from db -->
-                    <li><a href="/">最近发表</a></li>
-                    <li><a href="archives">个人简历</a></li>
-                </ul>
-            </nav>
+                <h1>WoodenHouse blog!</h1>
+                <p>天街小雨润如酥，草色遥看近却无</p>
+                <nav>
+                    <ul>   <!-- todo need to read from db -->
+                        <li><a href="/">最近发表</a></li>
+                        <li><a href="archives">个人简历</a></li>
+                    </ul>
+                </nav>
             </div>
         </header>
         <section id="sidebar">
@@ -60,13 +60,6 @@
         </section>
         <section id = "content">
             <header>
-                <nav>
-                    <ul>   <!-- todo need to read from db -->
-                        <li><a href="archives">上一篇[实在是不行]</a></li>
-                        <li><a href="contributors">首页</a></li>
-                        <li><a href="contact">下一篇[方法论]</a></li>
-                    </ul>
-                </nav>
             </header>
             <article class="post">
                 <header>
@@ -78,41 +71,67 @@
                 <p>今天天气不错，出去玩玩可好</p>
                 <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>
                 <footer>
-                    <section id="comments">
-                        <h3>留言</h3>
-                        <article class="comment">
-                            <p>这是评论！</p>
-                            <hr class="comment_line"/>
-                            <p class="commenter">Posted by Brain on
-                                <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
-                            </p>
-                        </article>
-                        <article class="comment">
-                            <p>这是评论！</p>
-                            <hr class="comment_line"/>
-                            <p class="commenter">Posted by Brain on
-                                <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
-                            </p>
-                        </article>
-                        <article class="comment">
-                            <p>这是评论！</p>
-                            <hr class="comment_line"/>
-                            <p class="commenter">Posted by Brain on
-                                <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
-                            </p>
-                        </article>
-                    </section>
-                    <section id="do_comments">
-                        <h3>发表留言</h3>
-                        <input type="input" name="name">
-                        <input type="input" name="email">
-                        <input type="input" name="verify">
-                        <input type="input" name="to_comment">
-                    </section>
+                    <nav>
+                        <ul>   <!-- todo need to read from db -->
+                            <li><a href="archives">上一篇[实在是不行]</a></li>
+                            <li><a href="contributors">首页</a></li>
+                            <li><a href="contact">下一篇[方法论]</a></li>
+                        </ul>
+                    </nav>
                 </footer>
             </article>
+            <section id="comments">
+                <h3>留言</h3>
+                <article class="comment">
+                    <p>这是评论！</p>
+                    <hr class="comment_line"/>
+                    <p class="commenter">Posted by Brain on
+                        <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
+                    </p>
+                </article>
+                <article class="comment">
+                    <p>这是评论！</p>
+                    <hr class="comment_line"/>
+                    <p class="commenter">Posted by Brain on
+                        <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
+                    </p>
+                </article>
+                <article class="comment">
+                    <p>这是评论！</p>
+                    <hr class="comment_line"/>
+                    <p class="commenter">Posted by Brain on
+                        <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
+                    </p>
+                </article>
+            </section>
+            <section id="do_comments">
+                <h3>发表留言</h3>
+                <form action="TODO" method="post">
+                    <fieldset id="commenter_info">
+                        <legend>评论 </legend>
+                        <ol>
+                            <li>
+                                <label for="name">姓名：</label>
+                                <input id="commenter_name" type="text" name="name">
+                            </li>
+                            <li>
+                                <label for="email">email：</label>
+                                <input id="commenter_name" type="email" name="email" placeholder="me@example.com">
+                            </li>
+                            <li>
+                                <label for="verify">验证码：</label>
+                                <input id="commenter_verify" type="text" name="verify" placeholder="请输入8" autocomplete="off" required="required">
+                            </li>
+                            <li>
+                                <label for="comment">评论:</label>
+                                <textarea name="comment" required="required" autocomplete = "off" placeholder="请发表您的评论" cols="45" rows = "8" id="comment_conten"></textarea>
+                            </li>
+                            <li><input type="submit" value="Submit"></li>
+                        </ol>
+                    </fieldset>
+                </form>
+            </section>
         </section>
-
         <footer id="page_footer">
             <p>&copy; 2010 AwesomeCo.</p>
             <nav>
