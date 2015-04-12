@@ -44,10 +44,30 @@
             </section>
             <section id="do_comments">
                 <h3>发表留言</h3>
-                <input type="input" name="name">
-                <input type="input" name="email">
-                <input type="input" name="verify">
-                <input type="input" name="to_comment">
+                <form action="TODO" method="post">
+                    <fieldset id="commenter_info">
+                        <legend>评论 </legend>
+                        <ol>
+                            <li>
+                                <label for="name">姓名：</label>
+                                <input id="commenter_name" type="text" name="name" autofocus="">
+                            </li>
+                            <li>
+                                <label for="email">email：</label>
+                                <input id="commenter_name" type="text" name="email" autofocus="">
+                            </li>
+                            <li>
+                                <label for="verify">请输入8：</label>
+                                <input id="commenter_verify" type="text" name="verify" autofocus="">
+                            </li>
+                            <li>
+                                <label for="comment">姓名:</label>
+                                <input id="commenter_comment" type="text" name="comment" autofocus="">
+                            </li>
+                            <li><input type="submit" value="Submit"></li>
+                        </ol>
+                    </fieldset>
+                </form>
             </section>
         </footer>
     </article>
