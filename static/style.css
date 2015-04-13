@@ -148,3 +148,12 @@ fieldset ol li {
 fieldset input, fieldset textarea{
     display: block;
 }
+
+ol#update_select li{
+    display: inline;
+}
+
+ol#update_select input, ol#update_select select, ol#update_new input {
+    display: inline;
+    margin-right: 20px;
+}

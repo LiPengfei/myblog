@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="static/style.css" type = "text/css">
+        <script src="static/funny.js" type="text/javascript" charset="utf-8"></script>
+        <!-- <script src="funny.js" type="text/javascript" charset="utf-8"></script> -->
+        <title>哈哈</title>  <!-- todo read from db -->
+    </head>
+    <body id = "article">
+        <header id="page_header">
+            <div id="logo">
+                <h1>WoodenHouse blog!</h1>
+                <p>天街小雨润如酥，草色遥看近却无</p>
+                <nav>
+                    <ul>   <!-- todo need to read from db -->
+                        <li><a href="/">最近发表</a></li>
+                        <li><a href="archives">个人简历</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <section id="sidebar">
+            <nav>
+                <h3>Categories</h3>
+                <ul>  <!-- todo need to read from db -->
+                    <li><a href="1">玩一下</a>
+                        <ul>
+                            <li><a href="1">玩一下1</a></li>
+                            <li><a href="1">玩一下2</a></li>
+                            <li><a href="1">玩一下3</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="2010/09">Septerber 2009</a></li>
+                    <li><a href="2010/08">August 2010</a></li>
+                    <li><a href="2010/07">July 2010</a></li>
+                    <li><a href="2010/06">June 2010</a></li>
+                    <li><a href="2010/05">May 2010</a></li>
+                    <li><a href="2010/04">April 2010</a></li>
+                    <li><a href="2010/03">March 2010</a></li>
+                    <li><a href="2010/02">February 2010</a></li>
+                    <li><a href="2010/01">January 2010</a></li>
+                </ul>
+            </nav>
+            <nav>
+                <h3>Archives</h3>
+                <ul>  <!-- todo need to read from db -->
+                    <li><a href="2010/10">October 2010</a></li>
+                    <li><a href="2010/09">Septerber 2009</a></li>
+                    <li><a href="2010/08">August 2010</a></li>
+                    <li><a href="2010/07">July 2010</a></li>
+                    <li><a href="2010/06">June 2010</a></li>
+                    <li><a href="2010/05">May 2010</a></li>
+                    <li><a href="2010/04">April 2010</a></li>
+                    <li><a href="2010/03">March 2010</a></li>
+                    <li><a href="2010/02">February 2010</a></li>
+                    <li><a href="2010/01">January 2010</a></li>
+                </ul>
+            </nav>
+        </section>
+        <section id = "content">
+            <header>
+            </header>
+            <form action="TODO" method="post">
+                <fieldset>
+                    <ol>
+                        <li>
+                            <textarea id="title_content" required="required" autocomplete="off" cols=80, rows=1 name="article_title">暂时这样TODO </textarea>
+                        </li>
+                        <li>
+                            <textarea id="article_content" required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >暂时这样TODO </textarea>
+                        </li>
+                    </ol>
+                    <ol id="update_select">
+                        <li>
+                            <label for="cat_select">大类：</label>
+                            <select name="cat_select">
+                                <option value="选择品牌">选择品牌</option>
+                                <option value="选择品牌1">选择品牌1</option>
+                                <option value="选择品牌2">选择品牌2</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label for="subcat_select">小类：</label>
+                            <select name="subcat_select">
+                                <option value="选择品牌">选择品牌</option>
+                                <option value="选择品牌1">选择品牌1</option>
+                                <option value="选择品牌2">选择品牌2</option>
+                            </select>
+                        </li>
+                    </ol>
+                    <ol id="update_new">
+                        <li>
+                            <label for="cat_new">新大类：</label>
+                            <input name = "cat_new" type="text"></li>
+                        </li>
+                        <li>
+                            <label for="subcat_new">新小类：</label>
+                            <input name = "subcat_new" type="text"></li>
+                        </li>
+                    </ol>
+                    <ol>
+                        <li><input type="submit" value="Submit"></li>
+                    </ol>
+                </fieldset>
+            </form>
+
+            <section id="comments">
+                <h3>留言</h3>
+                <article class="comment">
+                    <p>这是评论！</p>
+                    <hr class="comment_line"/>
+                    <p class="commenter">Posted by Brain on
+                        <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
+                    </p>
+                </article>
+                <article class="comment">
+                    <p>这是评论！</p>
+                    <hr class="comment_line"/>
+                    <p class="commenter">Posted by Brain on
+                        <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
+                    </p>
+                </article>
+                <article class="comment">
+                    <p>这是评论！</p>
+                    <hr class="comment_line"/>
+                    <p class="commenter">Posted by Brain on
+                        <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
+                    </p>
+                </article>
+            </section>
+        </section>
+        <footer id="page_footer">
+            <p>&copy; 2010 AwesomeCo.</p>
+            <nav>
+                <ul>
+                    <li><a href="http://awrsomeco.com">Home</a></li>
+                    <li><a href="about" data-width="400" data-height="500" class = 'popup'>About</a></li>
+                    <li><a href="terms.html">Terms of Servrice</a></li>
+                    <li><a href="privacy.html">Privacy</a></li>
+                </ul>
+            </nav>
+        </footer>
+    </body>
+</html>
