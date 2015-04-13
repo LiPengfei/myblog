@@ -1,11 +1,13 @@
 import pymongo
+import uuid
+import datetime
 
 con = MongoClient(host = "localhost", port = 27017, connect = True)
 db  = con.blog
 
-# A一级分类 {name, sub[], article[]}
+# A一级分类 {name, sub{}, article[]}
 # B二级分类 {name, article[]}
-# C日期     {month,  year, article[]]}
+# C日期     {year, month article[]]}
 # D文章     {title, content, aside, author, posted_date, updated_date, comments[], next, previous, href, tag []}
 # E用户     {name, email, password}
 # F评论人   {name, email}
@@ -18,6 +20,13 @@ db  = con.blog
 # E 不可变更 用作管理员内容
 # D 到 G 是一对多的关系， D 单向关联 G。 D 删除则G 删除。 G 删除则D 删除
 
+collec_cat = db["category"]
+collec_subcat = db["sub_category"]
+collec_archive = db["archive"]
+collec_article = db["article"]
+collec_root = db["root"]
+collec_user = db["user"]
+collec_comment = db["comment"]
 
 # find
 # A -> B, A -> D, B -> D
@@ -52,12 +61,69 @@ db  = con.blog
 # 主要操作是d的 增删改查， G的增删， F的增删
 
 # 我可能的行为 增加一篇文章。
+def add_article(**article):
+    now = datetime.datetime.now()
+    objson = {
+        "posted_date" : now,
+        "comments" : [],
+             }
+    objson["tilte"] = article.get("title", "无题")
+    objson["content"] = article.get("content", "无内容")
+    objson["author"] = article.get("author", "李鹏飞")
+    objson["href"] = article.get("href", "rand" + str(uuid.uuid1()))
+    objson["tag"]  = article.get("tag", [])
+    objson["aside"] = article.get("asise", "")
+    if article.has_key("previous"):
+        objson["previous"] = article["previous"]
 
-def add_article(title, content, aside, author, next_article, pre_article, href, tag, cat, subcat):
-#   posted_date,  -- auto
-#   updated_date, -- none
-#   comments[],   -- none
-    pass
+    result = collec_article.insert_one(objson)
+
+    if article.has_key("cat") :
+        if article.has_key("subcat") :
+        else :
+            add_article_to_cat(result.inserted_id, article["cat"])
+    else :
+        add_article_to_cat(result.inserted_id, "随笔")
+
+def add_article_to_cat(article_id, catname) :
+    result = collec_cat.update_one(
+        { "name" : catname },
+        {"$push": {"article" : article_id }},
+        upsert = True)
+
+    return True
+
+def add_article_to_subcat(article_id, catname, subcatname) :
+    result = collec_cat.find_one_and_update(
+        {"name" : catname},
+        {"$inc" : "sub." + subcatname},
+        upsert = True)
+
+    result = collec_subcat.update_one(
+        { "name" : subcatname},
+        { "$push": {"article" : article_id}},
+        upsert = True)
+
+    return True
+
+def add_article_to_list(article_id, previous_id = None) :
+    if previous_id != None :
+        before = collec_article.find_one_and_update(
+            {"_id" : previous_id},
+            {"$set" : {"next" : article_id}},
+            upsert = True)
+
+        if before.has_key("next") :
+            collec_article.find_one_and_update(
+                {"_id" : before["next"]},
+                {"$set" : {"previous" : article_id}},
+                upsert = True)
+            collec_article.find_one_and_update(
+                {"_id" : article_id},
+                {"$set" : {"next" : before["_id"]}},
+                upsert = True)
+            )
+
 
 # 删除一篇文章
 def delete_article():  # need a mongo id
