@@ -12,7 +12,7 @@ collec_cat = db["category"]
 collec_subcat = db["sub_category"]
 collec_archive = db["archive"]
 collec_article = db["article"]
-collec_root = db["root"]
+collec_author = db["author"]
 collec_user = db["user"]
 collec_comment = db["comment"]
 
@@ -23,7 +23,7 @@ def add_article(**article):
         "comments" : [],
     }
 
-    objson["tilte"] = article.get("title", "无题")
+    objson["title"] = article.get("title", "无题")
     objson["content"] = article.get("content", "无内容")
     objson["author"] = article.get("author", "李鹏飞")
     objson["href"] = article.get("href", "rand" + str(uuid.uuid1()))
@@ -56,14 +56,15 @@ def add_article_to_cat(article_id, catname) :
     return True
 
 def add_article_to_subcat(article_id, catname, subcatname) :
-    result = collec_cat.find_one_and_update(
-        {"name" : catname},
-        {"$inc" : {"sub." + subcatname : 1}},
-        upsert = True)
-
-    result = collec_subcat.update_one(
-        { "name" : subcatname},
+    result = collec_subcat.find_one_and_update(
+        {"fathername" : catname, "name" : subcatname},
         { "$push": {"article" : article_id}},
+        upsert = True, 
+        return_document=pymongo.collection.ReturnDocument.AFTER)
+    
+    result = collec_cat.find_one_and_update(
+        { "name" : catname},
+        {"$addToSet" : {"sub" : result["_id"]}},
         upsert = True)
 
     return True
@@ -92,15 +93,15 @@ def delete_article(article_id) :
     js_str = "function() {function func(item, array) { for (var it in array) { if (item == array[it]) return true; } return false;}; return func('%s', %s)};" % (str(article_id), "this['article']")
     res = collec_archive.find().where(js_str)
     for doc in res :
-        collec_archive.delete_one({"_id" : doc["_id"]})
+        collec_archive.find_one_and_update({"_id" : doc["_id"]}, {"$pull" : {"article" : article_id}})
 
     res = collec_subcat.find().where(js_str)
     for doc in res :
-        collec_subcat.delete_one({"_id" : doc["_id"]})
+        collec_subcat.find_one_and_update({"_id" : doc["_id"]}, {"$pull" : {"article" : article_id}})
 
     res = collec_cat.find().where(js_str)
     for doc in res :
-        collec_cat.delete_one({"_id" : doc["_id"]})
+        collec_cat.find_one_and_update({"_id" : doc["_id"]}, {"$pull" : {"article" : article_id}})
 
     if article.has_key("previous") :
         if article.has_key("next") : # previous next
@@ -117,37 +118,51 @@ def delete_article(article_id) :
     # 留言不删除
 
 def update_article(**updated_article):
+    article_id = updated_article["_id"]
+    del updated_article["_id"]
+
     now = datetime.datetime.now()
     updated_article = {
         "updated_date" : now,
     }
 
-    article = collec_article.find_one_and_update({"_id" : updated_article["_id"]}, updated_article)
+    article = collec_article.find_one_and_update({"_id" : article_id}, updated_article)
     # 暂不提供改变顺序，因为是双向链表，太麻烦
 
-delete_article(bson.objectid.ObjectId("552b8fac13fe2165f9578a6e"))
-# if __name__ == "__main__" :
-    # article = dict(
-    #     title = "How Many Shoule We Put You Down For ?",
-    #     content = """<p>Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.</p>
-    #     <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>""",
-    #     author =  "李鹏飞",
-    #     href = "/TODO",
-    #     tag = ["c/c++", "python"],
-    #     aside = '<p>&quot;Never give someone a chance to say no when selling your product.&quot; </p>',
-    #     cat_name = "测试",
-    # )
-    # add_article(**article)
+# delete_article(bson.objectid.ObjectId("552b8fac13fe2165f9578a6e"))
+if __name__ == "__main__" :
+    collec_cat.drop()
+    collec_subcat.drop()
+    collec_archive.drop()
+    collec_article.drop()
 
-    # article = dict(
-    #     title = "How Many Shoule We Put You Down For 2 ?",
-    #     content = """<p>Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.</p>
-    #     <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>""",
-    #     author =  "李鹏飞",
-    #     href = "/TODO",
-    #     tag = ["c/c++", "python"],
-    #     aside = '<p>&quot;Never give someone a chance to say no when selling your product.&quot; </p>',
-    #     cat_name = "测试",
-    #     subcat_name = "测试二级",
-    # )
-    # add_article(**article)
+    article = dict(
+        title = "How Many Shoule We Put You Down For ?",
+        content = """<p>Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.</p>
+        <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>""",
+        author =  "李鹏飞",
+        href = "1",
+        tag = ["c/c++", "python"],
+        aside = '<p>&quot;Never give someone a chance to say no when selling your product.&quot; </p>',
+        cat_name = "测试一级1",
+    )
+    add_article(**article)
+
+    article["subcat_name"] = "测试二级1"
+    article["href"] = "2"
+    add_article(**article)
+
+    article["subcat_name"] = "测试二级2"
+    article["href"] = "3"
+    add_article(**article)
+
+    article["cat_name"] = "测试一级2"
+    add_article(**article)
+
+    article["href"] = "4"
+    article["subcat_name"] = "测试二级1"
+    add_article(**article)
+
+    article["href"] = "5"
+    del article["subcat_name"]
+    add_article(**article)

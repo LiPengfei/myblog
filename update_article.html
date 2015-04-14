@@ -61,25 +61,50 @@
         <section id = "content">
             <header>
             </header>
-            <article class="post">
-                <header>
-                    <h2>How Many Shoule We Put You Down For ?</h2>
-                    <p>Posted by Brain on
-                        <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
-                    </p>
-                </header>
-                <p>今天天气不错，出去玩玩可好</p>
-                <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>
-                <footer>
-                    <nav>
-                        <ul>   <!-- todo need to read from db -->
-                            <li><a href="archives">上一篇[实在是不行]</a></li>
-                            <li><a href="contributors">首页</a></li>
-                            <li><a href="contact">下一篇[方法论]</a></li>
-                        </ul>
-                    </nav>
-                </footer>
-            </article>
+            <form action="TODO" method="post">
+                <fieldset>
+                    <ol>
+                        <li>
+                            <textarea id="title_content" required="required" autocomplete="off" cols=80, rows=1 name="article_title">暂时这样TODO </textarea>
+                        </li>
+                        <li>
+                            <textarea id="article_content" required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >暂时这样TODO </textarea>
+                        </li>
+                    </ol>
+                    <ol id="update_select">
+                        <li>
+                            <label for="cat_select">大类：</label>
+                            <select name="cat_select">
+                                <option value="选择品牌">选择品牌</option>
+                                <option value="选择品牌1">选择品牌1</option>
+                                <option value="选择品牌2">选择品牌2</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label for="subcat_select">小类：</label>
+                            <select name="subcat_select">
+                                <option value="选择品牌">选择品牌</option>
+                                <option value="选择品牌1">选择品牌1</option>
+                                <option value="选择品牌2">选择品牌2</option>
+                            </select>
+                        </li>
+                    </ol>
+                    <ol id="update_new">
+                        <li>
+                            <label for="cat_new">新大类：</label>
+                            <input name = "cat_new" type="text">
+                        </li>
+                        <li>
+                            <label for="subcat_new">新小类：</label>
+                            <input name = "subcat_new" type="text">
+                        </li>
+                    </ol>
+                    <ol>
+                        <li><input type="submit" value="Submit"></li>
+                    </ol>
+                </fieldset>
+            </form>
+
             <section id="comments">
                 <h3>留言</h3>
                 <article class="comment">
@@ -103,33 +128,6 @@
                         <time datetime="2010-10-01T14:39">October 1st, 2010 at 2:39PM</time>
                     </p>
                 </article>
-            </section>
-            <section id="do_comments">
-                <h3>发表留言</h3>
-                <form action="TODO" method="post">
-                    <fieldset id="commenter_info">
-                        <legend>评论 </legend>
-                        <ol>
-                            <li>
-                                <label for="name">姓名：</label>
-                                <input id="commenter_name" type="text" name="name">
-                            </li>
-                            <li>
-                                <label for="email">email：</label>
-                                <input id="commenter_name" type="email" name="email" placeholder="me@example.com">
-                            </li>
-                            <li>
-                                <label for="verify">验证码：</label>
-                                <input id="commenter_verify" type="text" name="verify" placeholder="请输入8" autocomplete="off" required="required">
-                            </li>
-                            <li>
-                                <label for="comment">评论:</label>
-                                <textarea name="comment" required="required" autocomplete = "off" placeholder="请发表您的评论" cols="45" rows = "8" id="comment_conten"></textarea>
-                            </li>
-                            <li><input type="submit" value="Submit"></li>
-                        </ol>
-                    </fieldset>
-                </form>
             </section>
         </section>
         <footer id="page_footer">

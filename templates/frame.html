@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="static/style.css" type = "text/css">
-        <script src="static/funny.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="stylesheet" href="/static/style.css" type = "text/css">
+        <script src="/static/funny.js" type="text/javascript" charset="utf-8"></script>
         <title>Woodenhouse's Blog</title>
     </head>
     <body id = "index">
@@ -14,60 +14,71 @@
             <nav>
                 <ul>
                     <li><a href="/">最近发表</a></li>
-                    <li><a href="archives">个人简历</a></li>
+                    <li><a href="/me">个人简历</a></li>
                 </ul>
             </nav>
             </div>
         </header>
+		{% block sidebar %}
         <section id="sidebar">
             <nav>
                 <h3>Categories</h3>
-                <ul>  <!-- todo need to read from db -->
-                    <li><a href="1">玩一下</a>
-                        <ul>
-                            <li><a href="1">玩一下1</a></li>
-                            <li><a href="1">玩一下2</a></li>
-                            <li><a href="1">玩一下3</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="2010/09">Septerber 2009</a></li>
-                    <li><a href="2010/08">August 2010</a></li>
-                    <li><a href="2010/07">July 2010</a></li>
-                    <li><a href="2010/06">June 2010</a></li>
-                    <li><a href="2010/05">May 2010</a></li>
-                    <li><a href="2010/04">April 2010</a></li>
-                    <li><a href="2010/03">March 2010</a></li>
-                    <li><a href="2010/02">February 2010</a></li>
-                    <li><a href="2010/01">January 2010</a></li>
+                <ul>
+					{% for k in sidebar["category"] %}
+					<li>
+						<a href= "/category/{% raw sidebar["category"][k]["name"] %}">
+							{% raw sidebar["category"][k]["name"] %}
+							{% if sidebar["category"][k].has_key("article") %}
+							({% raw len(sidebar["category"][k]["article"]) %})
+							{% end %}
+						</a>
+						{% if sidebar["category"][k].has_key("sub") %}
+						<ul>
+							{% for sk in sidebar["category"][k]["sub"] %}
+							<li>
+								<a href= "/category/{% raw sidebar["category"][k]["name"] %}/{% raw sidebar["subcategory"][sk]["name"] %}">
+									{% raw sidebar["subcategory"][sk]["name"] %}
+									{% if sidebar["subcategory"][sk].has_key("article") %}
+									({% raw len(sidebar["subcategory"][sk]["article"]) %})
+									{% end %}
+								</a>
+							</li>
+							{% end %}
+						</ul>
+						{% end %}
+					</li>
+					{% end %}
                 </ul>
             </nav>
             <nav>
                 <h3>Archives</h3>
-                <ul>  <!-- todo need to read from db -->
-                    <li><a href="2010/10">October 2010</a></li>
-                    <li><a href="2010/09">Septerber 2009</a></li>
-                    <li><a href="2010/08">August 2010</a></li>
-                    <li><a href="2010/07">July 2010</a></li>
-                    <li><a href="2010/06">June 2010</a></li>
-                    <li><a href="2010/05">May 2010</a></li>
-                    <li><a href="2010/04">April 2010</a></li>
-                    <li><a href="2010/03">March 2010</a></li>
-                    <li><a href="2010/02">February 2010</a></li>
-                    <li><a href="2010/01">January 2010</a></li>
+                <ul>
+					{% for k in sidebar["archive"] %}
+					<li>
+						<a href= "/archive/{% raw sidebar["archive"][k]["year"] %}{% raw sidebar["archive"][k]["month"] %}">
+							{% if sidebar["archive"][k]["month"] < 10 %}
+							{% raw sidebar["archive"][k]["year"] %}/0{% raw sidebar["archive"][k]["month"] %}
+							{% else %}
+							{% raw sidebar["archive"][k]["year"] %}/{% raw sidebar["archive"][k]["month"] %}
+							{% end %}
+						</a>
+					</li>
+					{% end %}
                 </ul>
             </nav>
         </section>
+		{% end %}
 
-		{% block articles_content %} {% end %}
+		{% block content %} {% end %}
 
         <footer id="page_footer">
             <p>&copy; 2010 AwesomeCo.</p>
             <nav>
                 <ul>
-                    <li><a href="http://awrsomeco.com">Home</a></li>
-                    <li><a href="about" data-width="400" data-height="500" class = 'popup'>About</a></li>
-                    <li><a href="terms.html">Terms of Servrice</a></li>
-                    <li><a href="privacy.html">Privacy</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/me" data-width="400" data-height="500" class = 'popup'>About</a></li>
+                    <li><a href="/feed">Feed</a></li>
+                    <li><a href="/">Home</a></li>
                 </ul>
             </nav>
         </footer>

@@ -8,12 +8,12 @@ import tornado.options
 import tornado.ioloop
 import tornado.httpserver
 import random
+import pymongo
+import bson
 
 from tornado.options import options, define
 
 define("port", default = 80, help = "run on the given port", type=int)
-
-define("db_host", default = 80, help = "run on the given port", type=int)
 
 # one way.  start with param
 # define("db_name", default = 80, help = "run on the given port", type=int)
@@ -26,8 +26,15 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r"/", HomeHandler),
-            (r"/article", ArticleHandler),
+            (r"/article/(\w+)", ArticleHandler),
+            (r"/category/([^/.]+)", CategoryHandler),
+            (r"/category/([^/.]+)/([^/.]+)", SubCategoryHandler),
+            (r"/archive/(\d+)", ArchiveHandler),
+            (r"/update_article", UpdateHandler),
+            (r"/login", LoginHandler),
+            (r"/auth/login", DoLoginHandler),
         ]
+
         settings = dict(
             blog_title = u"Hello World!",
             template_path = os.path.join(os.path.dirname(__file__), "templates"),
@@ -40,7 +47,9 @@ class Application(tornado.web.Application):
         )
 
         tornado.web.Application.__init__(self, handlers, **settings)
-        # tornado.db = mongodb TODO
+
+        self.db = pymongo.MongoClient()["blog"]
+
         # 先做硬编码 TODO
         self.latests = [
             dict(
@@ -64,7 +73,6 @@ class Application(tornado.web.Application):
                 author  = "李鹏飞",
             ),
         ]
-
         self.article = dict(
                 title = "How Many Shoule We Put You Down For ?",
                 posted_date = "October 1st, 2010 at 2:39PM",
@@ -97,7 +105,6 @@ class Application(tornado.web.Application):
                     ),
                 ],
             )
-
         self.signins = [
             "天街小雨润如酥，草色遥看近却无",
             "最是一年春好处， 绝胜烟柳满皇都",
@@ -105,28 +112,143 @@ class Application(tornado.web.Application):
             "我住长江头，君住长江尾，日日思君不见君，共饮长江水",
             "会挽雕弓如满月，西北望，射天狼"
         ]
+        self.strings = {
+            "loginfo" : "请输入用户名和密码",
+            "errorauth" : "用户名或者密码错误",
+        }
+
+    def getside_bar_info(self):
+        res = self.db["category"].find()
+        category = {}
+        for v in res :
+            category[v["_id"]] = v
+        res = self.db["sub_category"].find()
+        subcategory = {}
+        for v in res :
+            subcategory[v["_id"]] = v
+        res = self.db["archive"].find()
+        archive = {}
+        for v in res :
+            archive[v["_id"]] = v
+
+        return {
+            "category" : category,
+            "subcategory" : subcategory,
+            "archive" : archive,
+        }
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
     def db(self):
         return self.application.db
+    @property
+    def sidebar(self):
+        return self.application.getside_bar_info()
 
     def get_current_user(self):
         pass
 
 class HomeHandler(BaseHandler):
     def get(self):
-        self.render("home.html", articles = self.application.latests)
+        articles = self.db["article"].find().sort(
+            [("updated_date", pymongo.DESCENDING),("posted_date", pymongo.DESCENDING)]).limit(20)
+        self.render("home.html", articles = articles, sidebar = self.sidebar)
 
 class ArticleHandler(BaseHandler):
-    def get(self):
+    def get(self, url_input):
+        print(url_input)
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
-        self.render("article.html", article = self.application.article, signin = signin)
+        # 这里为了让地址栏看着不那么渣, 没有用id做key。href实际上可以说起了主键的作用了。人为起的名字做键肯定会有问题，所以，再插入的时候要多做一些检查操作，如果重复了就伪随机一个，加上后缀，当前的总文章数做后缀
+        article = self.db["article"].find_one({"href" : url_input})
 
-class AuthLogoutHandler(BaseHandler):
+        self.render (
+            "article.html",
+            article = article,
+            signin = signin,
+            sidebar = self.sidebar
+        )
+
+class CategoryHandler(BaseHandler):
+    def get(self, url_input):
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        category = self.db["category"].find_one({"name" : url_input})
+        category["article"] = category.get("article", [])
+
+        articles = []
+        for article_id in category["article"] :
+            article = self.db["article"].find_one({"_id" : article_id })
+            if article != None :
+                articles.append(article)
+
+        self.render (
+            "home.html",
+            articles = articles,
+            signin = signin,
+            sidebar = self.sidebar
+        )
+
+class SubCategoryHandler(BaseHandler):
+    def get(self, fathername, name):
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        article_ids = self.db["sub_category"].find_one({"name" : name, "fathername" : fathername}).get("article", [])
+
+        articles = []
+        for article_id in article_ids :
+            article = self.db["article"].find_one({"_id" : article_id })
+            if article != None :
+                articles.append(article)
+
+        self.render (
+            "home.html",
+            articles = articles,
+            signin = signin,
+            sidebar = self.sidebar
+        )
+
+class ArchiveHandler(BaseHandler):
+    def get(self, archiveinfo):
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+
+        year = int(archiveinfo[:4])
+        month = int(archiveinfo[4:])
+
+        article_ids = self.db["archive"].find_one({"year" : year, "month" : month}).get("article", [])
+
+        articles = []
+        for article_id in article_ids :
+            article = self.db["article"].find_one({"_id" : article_id })
+            if article != None :
+                articles.append(article)
+
+        self.render (
+            "home.html",
+            articles = articles,
+            signin = signin,
+            sidebar = self.sidebar
+        )
+
+
+class LoginHandler(BaseHandler):
     def get(self):
-        self.clear_cookie("blogdemo_user")
-        self.redirect(self.get_argument("next", "/"))
+        tip = self.get_argument("tip", "loginfo")
+        self.render("login.html", tip = self.application.strings[tip])
+
+class DoLoginHandler(BaseHandler):
+    def get(self):
+        pass
+
+    def post(self):
+        user_name = self.get_argument("user_name")
+        user_password = self.get_argument("user_password")
+        doc = self.db["author"].find_one({"name" : user_name, "password" : user_password})
+        if doc == None :
+            self.redirect("/login?tip=errorauth")
+        else :
+            self.redirect("/")
+
+class UpdateHandler(BaseHandler):
+    def get(self):
+        self.render("update_article.html", article = self.application.article)
 
 class ArtSummaryModule(tornado.web.UIModule):
     def render(self, article):

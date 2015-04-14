@@ -4,7 +4,7 @@
     {% raw signin %}
 {% end %}
 
-{% block articles_content %}
+{% block content %}
 <section id = "content">
     <header>
     </header>
@@ -14,10 +14,10 @@
             <p>
                 {% if article.has_key("updated_date") %}
                 Updated by {% raw article["author"] %} on
-                <time>{{ article["updated_date"] }}</time>
+                <time>{{ article["updated_date"].strftime("%Y-%m-%d %H:%M") }}</time>
                 {% else %}
                 Posted by {% raw article["author"] %} on
-                <time>{% raw article["posted_date"] %}</time>
+                <time>{% raw article["posted_date"].strftime("%Y-%m-%d %H:%M") %}</time>
                 {% end %}
             </p>
         </header>
@@ -28,48 +28,50 @@
                     {% if article.has_key("previous") %}
                     <li><a href="{% raw article["previous"]["href"] %}"> &lt&lt {%raw article["previous"]["title"] %} </a></li>
                     {% end %}
-                    <li><a href="contributors">首页</a></li>
+                    <li><a href="/">首页</a></li>
                     {% if article.has_key("next") %}
                     <li><a href="{% raw article["next"]["href"] %}"> {% raw article["next"]["title"] %} &gt&gt </a></li>
                     {% end %}
                 </ul>
             </nav>
-            <section id="comments">
-                <h3>留言</h3>
-                {% if article.has_key("comments") %}
-                {% for comment in article["comments"] %}
-                    {% module comment(comment) %}
-                {% end %}
-                {% end %}
-            </section>
-            <section id="do_comments">
-                <h3>发表留言</h3>
-                <form action="TODO" method="post">
-                    <fieldset id="commenter_info">
-                        <legend>评论 </legend>
-                        <ol>
-                            <li>
-                                <label for="name">姓名：</label>
-                                <input id="commenter_name" type="text" name="name" autofocus="">
-                            </li>
-                            <li>
-                                <label for="email">email：</label>
-                                <input id="commenter_name" type="text" name="email" autofocus="">
-                            </li>
-                            <li>
-                                <label for="verify">请输入8：</label>
-                                <input id="commenter_verify" type="text" name="verify" autofocus="">
-                            </li>
-                            <li>
-                                <label for="comment">姓名:</label>
-                                <input id="commenter_comment" type="text" name="comment" autofocus="">
-                            </li>
-                            <li><input type="submit" value="Submit"></li>
-                        </ol>
-                    </fieldset>
-                </form>
-            </section>
         </footer>
     </article>
+
+    <section id="comments">
+        {% if len(article["comments"]) != 0 %}
+        <h3>留言</h3>
+        {% for comment in article["comments"] %}
+        {% module comment(comment) %}
+        {% end %}
+        {% end %}
+    </section>
+
+    <section id="do_comments">
+        <h3>发表留言</h3>
+        <form action="TODO" method="post">
+            <fieldset id="commenter_info">
+                <legend>评论 </legend>
+                <ol>
+                    <li>
+                        <label for="name">姓名：</label>
+                        <input id="commenter_name" type="text" name="name">
+                    </li>
+                    <li>
+                        <label for="email">email：</label>
+                        <input id="commenter_name" type="text" name="email" placeholder="me@example.com">
+                    </li>
+                    <li>
+                        <label for="verify">验证码：</label>
+                        <input id="commenter_verify" type="text" name="verify" placeholder="请输入8" autocomplete = "off">
+                    </li>
+                    <li>
+                        <label for="comment">输入评论:</label>
+                        <textarea name="comment" cols=40 rows=8></textarea>
+                    </li>
+                    <li><input type="submit" value="Submit"></li>
+                </ol>
+            </fieldset>
+        </form>
+    </section>
 </section>
 {% end %}
