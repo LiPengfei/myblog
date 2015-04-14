@@ -49,6 +49,7 @@
     <section id="do_comments">
         <h3>发表留言</h3>
         <form action="TODO" method="post">
+            <input type="hidden" name="article_id" value = {% raw article["_id"] %}/>
             <fieldset id="commenter_info">
                 <legend>评论 </legend>
                 <ol>

@@ -65,9 +65,19 @@
                 <fieldset>
                     <ol>
                         <li>
-                            <textarea id="title_content" required="required" autocomplete="off" cols=80, rows=1 name="article_title">暂时这样TODO </textarea>
+                            <label for="article_title"> 标题：</label>
+                            <textarea id="article_title" required="required" autocomplete="off" cols=80, rows=1 name="article_title">暂时这样TODO </textarea>
                         </li>
                         <li>
+                            <label for="article_aside"> 旁白：</label>
+                            <textarea id="article_aside" autocomplete="off" cols=80, rows=1 name="article_aside">暂时这样TODO </textarea>
+                        </li>
+                        <li>
+                            <label for="article_href"> 链接：</label>
+                            <input id="article_href" required="required" width= 60% name="article_href"/>
+                        </li>
+                        <li>
+                            <label for="article_content"> 正文：</label>
                             <textarea id="article_content" required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >暂时这样TODO </textarea>
                         </li>
                     </ol>
