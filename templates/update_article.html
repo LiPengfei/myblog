@@ -1,0 +1,57 @@
+{% extends frame.html %}
+{% block sidebar %} {% end %}
+{% block content %}
+<section id="content">
+	<form action="TODO" method="post">
+		<fieldset>
+			<ol>
+				<li>
+					<textarea id="title_content" required="required" autocomplete="off" cols=80, rows=1 name="article_title">暂时这样TODO </textarea>
+				</li>
+				<li>
+					<textarea id="article_content" required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >暂时这样TODO </textarea>
+				</li>
+			</ol>
+			<ol id="update_select">
+				<li>
+					<label for="cat_select">大类：</label>
+					<select name="cat_select">
+						<option value="选择品牌">选择品牌</option>
+						<option value="选择品牌1">选择品牌1</option>
+						<option value="选择品牌2">选择品牌2</option>
+					</select>
+				</li>
+				<li>
+					<label for="subcat_select">小类：</label>
+					<select name="subcat_select">
+						<option value="选择品牌">选择品牌</option>
+						<option value="选择品牌1">选择品牌1</option>
+						<option value="选择品牌2">选择品牌2</option>
+					</select>
+				</li>
+			</ol>
+			<ol id="update_new">
+				<li>
+					<label for="cat_new">新大类：</label>
+					<input name = "cat_new" type="text">
+				</li>
+				<li>
+					<label for="subcat_new">新小类：</label>
+					<input name = "subcat_new" type="text">
+				</li>
+			</ol>
+			<ol>
+				<li><input type="submit" value="Submit"></li>
+			</ol>
+		</fieldset>
+	</form>
+    <section id="comments">
+        <h3>留言</h3>
+        {% if article.has_key("comments") %}
+        {% for comment in article["comments"] %}
+        {% module comment(comment) %}
+        {% end %}
+        {% end %}
+    </section>
+</section>
+{% end %}

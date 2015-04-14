@@ -1,0 +1,29 @@
+{% extends frame.html %}
+{% block sidebar %} {% end %}
+
+{% block content %}
+<section id="content">
+	<form action="/do_login" method="post">
+		<fieldset>
+			<ol>
+				<li>
+					<label for="user_name">user:</label>
+					<input name = "user_name" type="text"/>
+				</li>
+				<li>
+					<label for="user_password">password:</label>
+					<input name = "user_password" type="password"/>
+				</li>
+				<li>
+					<input type="submit"/ value="登陆"/>
+				</li>
+			</ol>
+		</fieldset>
+	</form>
+    <p>
+        {% if tip != None %}
+        {{ tip }}
+        {% end %}
+    </p>
+</section>
+{% end %}

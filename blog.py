@@ -8,12 +8,12 @@ import tornado.options
 import tornado.ioloop
 import tornado.httpserver
 import random
+import pymongo
+import bson
 
 from tornado.options import options, define
 
 define("port", default = 80, help = "run on the given port", type=int)
-
-define("db_host", default = 80, help = "run on the given port", type=int)
 
 # one way.  start with param
 # define("db_name", default = 80, help = "run on the given port", type=int)
@@ -27,7 +27,11 @@ class Application(tornado.web.Application):
         handlers = [
             (r"/", HomeHandler),
             (r"/article", ArticleHandler),
+            (r"/update_article", UpdateHandler),
+            (r"/login", LoginHandler),
+            (r"/do_login", DoLoginHandler),
         ]
+
         settings = dict(
             blog_title = u"Hello World!",
             template_path = os.path.join(os.path.dirname(__file__), "templates"),
@@ -40,7 +44,8 @@ class Application(tornado.web.Application):
         )
 
         tornado.web.Application.__init__(self, handlers, **settings)
-        # tornado.db = mongodb TODO
+        tornado.db = pymongo.MongoClient()
+
         # 先做硬编码 TODO
         self.latests = [
             dict(
@@ -123,10 +128,22 @@ class ArticleHandler(BaseHandler):
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
         self.render("article.html", article = self.application.article, signin = signin)
 
-class AuthLogoutHandler(BaseHandler):
+class LoginHandler(BaseHandler):
     def get(self):
-        self.clear_cookie("blogdemo_user")
-        self.redirect(self.get_argument("next", "/"))
+        self.render("login.html")
+
+class DoLoginHandler(BaseHandler):
+    def get(self):
+        pass
+
+    def post(self):
+        user_name = self.get_argument("user_name")
+        user_password = self.get_argument("user_password")
+        self.db.find_one({})
+
+class UpdateHandler(BaseHandler):
+    def get(self):
+        self.render("update_article.html", article = self.application.article)
 
 class ArtSummaryModule(tornado.web.UIModule):
     def render(self, article):

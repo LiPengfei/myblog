@@ -19,6 +19,7 @@
             </nav>
             </div>
         </header>
+		{% block sidebar %}
         <section id="sidebar">
             <nav>
                 <h3>Categories</h3>
@@ -57,8 +58,9 @@
                 </ul>
             </nav>
         </section>
+		{% end %}
 
-		{% block articles_content %} {% end %}
+		{% block content %} {% end %}
 
         <footer id="page_footer">
             <p>&copy; 2010 AwesomeCo.</p>
