@@ -6,9 +6,9 @@ con = MongoClient(host = "localhost", port = 27017, connect = True)
 db  = con.blog
 
 # A一级分类 category {name, sub[], article[]}
-# B二级分类 sub_category {name, article[], fathername}
+# B二级分类 sub_category {name, article[]}
 # C日期     archive {year, month article[]]}
-# D文章     {title, content, aside, author, posted_date, updated_date, comments[], next, previous, href, tag []}
+# D文章     {title, content, aside, author, posted_date, updated_date, comments[], previous, href, tag []}
 # E用户     {name, email, password}
 # F评论人   {name, email}
 # G评论     {content, post_time, author}

@@ -56,16 +56,30 @@ def add_article_to_cat(article_id, catname) :
     return True
 
 def add_article_to_subcat(article_id, catname, subcatname) :
-    result = collec_subcat.find_one_and_update(
-        {"fathername" : catname, "name" : subcatname},
-        { "$push": {"article" : article_id}},
-        upsert = True, 
-        return_document=pymongo.collection.ReturnDocument.AFTER)
-    
-    result = collec_cat.find_one_and_update(
-        { "name" : catname},
-        {"$addToSet" : {"sub" : result["_id"]}},
-        upsert = True)
+    category = collec_cat.find_one_and_update(
+        {"name" : catname},
+        {"$push" : {"article" : article_id} },
+        upsert = True,
+        return_document=pymongo.collection.ReturnDocument.AFTER
+    )
+    subcatory = collec_subcat.find(
+        {"_id" : {"$in" : category.get("sub", [])}, "name" : subcatname},
+    )
+
+    assert(subcatory.count() <= 1)
+    if subcatory.count() != 0 :
+        collec_subcat.find_one_and_update(
+            {"_id" : subcatory[0]["_id"]},
+            {"$push", {"article" : article_id}}
+        )
+    else :
+        subcatory = collec_subcat.insert_one(
+            {"name" : subcatname, "article" : [article_id]}
+        )
+        collec_cat.find_one_and_update(
+            {"name" : catname},
+            {"$push" : {"sub" : subcatory.inserted_id} },
+        )
 
     return True
 

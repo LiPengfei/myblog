@@ -172,13 +172,17 @@ class CategoryHandler(BaseHandler):
     def get(self, url_input):
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
         category = self.db["category"].find_one({"name" : url_input})
-        category["article"] = category.get("article", [])
+
+        if category.has_key("article") :
+            articles_cursor = self.db["article"].find(
+                {"_id" : {"$in" : category["article"]}}).sort(
+                [("updated_date", pymongo.DESCENDING),
+                 ("posted_date", pymongo.DESCENDING)]
+            )
 
         articles = []
-        for article_id in category["article"] :
-            article = self.db["article"].find_one({"_id" : article_id })
-            if article != None :
-                articles.append(article)
+        for article in articles_cursor :
+            articles.append(article)
 
         self.render (
             "home.html",
@@ -190,13 +194,22 @@ class CategoryHandler(BaseHandler):
 class SubCategoryHandler(BaseHandler):
     def get(self, fathername, name):
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
-        article_ids = self.db["sub_category"].find_one({"name" : name, "fathername" : fathername}).get("article", [])
+        category = self.db["category"].find_one({"name" : fathername})
+        assert(category["sub"])
+        subcategory = self.db["sub_category"].find_one(
+            {"name":name, "_id" : {"$in" : category["sub"]}}
+        )
+
+        if subcategory.has_key("article") :
+            articles_cursor = self.db["article"].find(
+                {"_id" : {"$in" : subcategory["article"]}}).sort(
+                [("updated_date", pymongo.DESCENDING),
+                 ("posted_date", pymongo.DESCENDING)]
+            )
 
         articles = []
-        for article_id in article_ids :
-            article = self.db["article"].find_one({"_id" : article_id })
-            if article != None :
-                articles.append(article)
+        for article in articles_cursor :
+            articles.append(article)
 
         self.render (
             "home.html",
@@ -212,13 +225,18 @@ class ArchiveHandler(BaseHandler):
         year = int(archiveinfo[:4])
         month = int(archiveinfo[4:])
 
-        article_ids = self.db["archive"].find_one({"year" : year, "month" : month}).get("article", [])
+        archive = self.db["archive"].find_one({"year" : year, "month" : month})
+
+        if archive.has_key("article") :
+            articles_cursor = self.db["article"].find(
+                {"_id" : {"$in" : archive["article"]}}).sort(
+                [("updated_date", pymongo.DESCENDING),
+                 ("posted_date", pymongo.DESCENDING)]
+            )
 
         articles = []
-        for article_id in article_ids :
-            article = self.db["article"].find_one({"_id" : article_id })
-            if article != None :
-                articles.append(article)
+        for article in articles_cursor :
+            articles.append(article)
 
         self.render (
             "home.html",
