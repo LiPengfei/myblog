@@ -10,6 +10,7 @@ import tornado.httpserver
 import random
 import pymongo
 import bson
+import datetime
 
 from tornado.options import options, define
 
@@ -31,14 +32,19 @@ class Application(tornado.web.Application):
             (r"/category/([^/.]+)/([^/.]+)", SubCategoryHandler),
             (r"/archive/(\d+)", ArchiveHandler),
             (r"/update_article", UpdateHandler),
+            (r"/comment", CommentHandler),
             (r"/login", LoginHandler),
             (r"/auth/login", DoLoginHandler),
+            (r"/auth/logout", DoLogoutHandler),
         ]
 
         settings = dict(
             blog_title = u"Hello World!",
             template_path = os.path.join(os.path.dirname(__file__), "templates"),
             static_path = os.path.join(os.path.dirname(__file__), "static"),
+            cookie_secret = "bZJc2sWbQLKos6GkHn/VB9oXwQt8S0R0kRvJ5/xJ89E=",
+            xsrf_cookies = True,
+            login_url = "/login", # for authenticated decoreactor
             ui_modules = {
                 "art_summary" : ArtSummaryModule,
                 "comment"    : CommentModule,
@@ -47,64 +53,8 @@ class Application(tornado.web.Application):
         )
 
         tornado.web.Application.__init__(self, handlers, **settings)
-
         self.db = pymongo.MongoClient()["blog"]
 
-        # 先做硬编码 TODO
-        self.latests = [
-            dict(
-                title = "How Many Shoule We Put You Down For ?",
-                posted_date = "October 1st, 2010 at 2:39PM",
-                aside = '<p>&quot;Never give someone a chance to say no when selling your product.&quot; </p>',
-                content = """<p>Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.</p>
-                <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>""",
-                comments = 25,
-                href = "/TODO",
-                author  = "李鹏飞",
-            ),
-            dict(
-                title = "How Many Shoule We Put You Down For 2?",
-                posted_date = "October 1st, 2010 at 2:39PM",
-                updated_date = "October 1st, 2010 at 3:39PM",
-                content = """<p>Adipisicing corporis tempora atque debitis animi dolores. Placeat ut ut exercitationem asperiores consectetur. Laudantium inventore reprehenderit iusto sit sit iure itaque tenetur sed mollitia. Consequuntur non incidunt cumque blanditiis odio.</p>
-                <p>Elit vero iusto quaerat blanditiis recusandae natus omnis impedit. Nobis quos mollitia inventore eveniet quo iste laboriosam at. Beatae facilis alias autem unde eveniet nam. Inventore architecto suscipit dolorum voluptate!</p>""",
-                comments = 10,
-                href = "/TODO",
-                author  = "李鹏飞",
-            ),
-        ]
-        self.article = dict(
-                title = "How Many Shoule We Put You Down For ?",
-                posted_date = "October 1st, 2010 at 2:39PM",
-                content = """<p>Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.</p>
-                <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>""",
-                author  = "李鹏飞",
-                previous = dict(
-                    title = "实在是不行",
-                    href = "aaaa",
-                ),
-                next = dict(
-                    title = "实在还是不行",
-                    href = "aaaa",
-                ),
-                comments = [
-                    dict(
-                        author = "lipengfei",
-                        posted_date = "October 1st, 2010 at 2:39PM",
-                        content = "<h1>这个是很牛逼的</h1>",
-                    ),
-                    dict(
-                        author = "lipengfei",
-                        posted_date = "October 1st, 2010 at 2:39PM",
-                        content = "<h>这个是很牛逼的</h>",
-                    ),
-                    dict(
-                        author = "lipengfei",
-                        posted_date = "October 1st, 2010 at 2:39PM",
-                        content = "<h>这个是很牛逼的</h>",
-                    ),
-                ],
-            )
         self.signins = [
             "天街小雨润如酥，草色遥看近却无",
             "最是一年春好处， 绝胜烟柳满皇都",
@@ -141,22 +91,23 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def db(self):
         return self.application.db
+
     @property
     def sidebar(self):
         return self.application.getside_bar_info()
 
-    def get_current_user(self):
-        pass
+    def get_current_user(self): # for authenticated decoreactor
+        return self.get_secure_cookie("blog_owner")
 
 class HomeHandler(BaseHandler):
     def get(self):
         articles = self.db["article"].find().sort(
             [("updated_date", pymongo.DESCENDING),("posted_date", pymongo.DESCENDING)]).limit(20)
+
         self.render("home.html", articles = articles, sidebar = self.sidebar)
 
 class ArticleHandler(BaseHandler):
     def get(self, url_input):
-        print(url_input)
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
         # 这里为了让地址栏看着不那么渣, 没有用id做key。href实际上可以说起了主键的作用了。人为起的名字做键肯定会有问题，所以，再插入的时候要多做一些检查操作，如果重复了就伪随机一个，加上后缀，当前的总文章数做后缀
         article = self.db["article"].find_one({"href" : url_input})
@@ -190,7 +141,7 @@ class CategoryHandler(BaseHandler):
 class SubCategoryHandler(BaseHandler):
     def get(self, fathername, name):
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
-        article_ids = self.db["sub_category"].find_one({"name" : name, "fathername" : fathername}).get("article", [])
+        article_ids = self.db["sub_category"].find_one({"name" : name, "fathername" : fathername}).get("article", []) #TODO
 
         articles = []
         for article_id in article_ids :
@@ -244,11 +195,84 @@ class DoLoginHandler(BaseHandler):
         if doc == None :
             self.redirect("/login?tip=errorauth")
         else :
-            self.redirect("/")
+            self.set_secure_cookie("blog_owner", user_name)
+            self.redirect(self.get_argument("next", "/"))
+
+class DoLogoutHandler(BaseHandler):
+    def get(self):
+        self.clear_cookie("blog_owner")
+        self.redirect(self.get_argument("next", "/"))
 
 class UpdateHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
-        self.render("update_article.html", article = self.application.article)
+        id = self.get_argument("id", None)
+        self.render("update_article.html")
+
+    @tornado.web.authenticated
+    def post(self):
+        id = self.get_argument("id", None)
+        title = self.get_argument("title")
+        text = self.get_argument("markdown")
+        html = markdown.markdown(text)
+        # if id:
+        #     entry = self.db.get("SELECT * FROM entries WHERE id = %s", int(id))
+        #     if not entry: raise tornado.web.HTTPError(404)
+        #     slug = entry.slug
+        #     self.db.execute(
+        #         "UPDATE entries SET title = %s, markdown = %s, html = %s "
+        #         "WHERE id = %s", title, text, html, int(id))
+        # else:
+        #     slug = unicodedata.normalize("NFKD", title).encode(
+        #         "ascii", "ignore")
+        #     slug = re.sub(r"[^\w]+", " ", slug)
+        #     slug = "-".join(slug.lower().strip().split())
+        #     if not slug: slug = "entry"
+        #     while True:
+        #         e = self.db.get("SELECT * FROM entries WHERE slug = %s", slug)
+        #         if not e: break
+        #         slug += "-2"
+        #     self.db.execute(
+        #         "INSERT INTO entries (author_id,title,slug,markdown,html,"
+        #         "published) VALUES (%s,%s,%s,%s,%s,UTC_TIMESTAMP())",
+        #         self.current_user.id, title, slug, text, html)
+        # self.redirect("/entry/" + slug)
+
+class CommentHandler(BaseHandler):
+    def get(self):
+        pass
+
+    def post(self):
+        article_id_string = self.get_argument("article_id", None)
+        if article_id_string == None:
+            raise tornado.web.HTTPError(404)
+
+        article_id = bson.ObjectId(article_id_string)
+        name = self.get_argument("name", "")
+        email = self.get_argument("email", "")
+        comment = self.get_argument("comment", "")
+
+        db_user = None
+        user_doc = self.db["user"].find_one(
+            {"name" : name, "email" : email})
+        if not db_user :
+            user_doc = self.db["user"].insert_one({"name" : name, "email" : email})
+            db_user = user_doc.inserted_id
+        else:
+            db_user = user_doc["_id"]
+
+        now = datetime.datetime.now()
+        db_comment = self.db["comment"].insert_one(
+            {"content" : comment,
+             "author" : db_user,
+             "posted_date" : now})
+        db_article = self.db["article"].find_one_and_update(
+            {"_id" : article_id},
+            {"$push" : {"comment" : db_comment.inserted_id}})
+
+        print("/article/%s" % (db_article["href"]))
+        self.redirect("/article/%s" % (db_article["href"]))
+
 
 class ArtSummaryModule(tornado.web.UIModule):
     def render(self, article):
@@ -256,6 +280,7 @@ class ArtSummaryModule(tornado.web.UIModule):
 
 class CommentModule(tornado.web.UIModule):
     def render(self, comment):
+        comment = self.handler.db["comment"].find_one({"_id" : comment})
         return self.render_string("modules/comment.html", comment = comment)
 
 if __name__ == "__main__" :

@@ -8,10 +8,10 @@ db  = con.blog
 # A一级分类 category {name, sub[], article[]}
 # B二级分类 sub_category {name, article[], fathername}
 # C日期     archive {year, month article[]]}
-# D文章     {title, content, aside, author, posted_date, updated_date, comments[], next, previous, href, tag []}
-# E用户     {name, email, password}
-# F评论人   {name, email}
-# G评论     {content, post_time, author}
+# D文章     article {title, content, aside, author, posted_date, updated_date, comments[], next, previous, href, tag []}
+# E用户     author {name, email, password}
+# F评论人   user {name, email}
+# G评论     comment {content, post_time, author}
 
 # A 到 B 是一对多的关系， A 单向关联 B。 B 的删除会影响到 A。
 # A 到 D 是一对多的关系， A 单向关联 D。 D 的删除会影响到 A。  D 选择类型的时候也会影响到A。 但是 D不保存类型信息。那为什么D不保存类型信息呢？那么先让A不可以改变类型吧

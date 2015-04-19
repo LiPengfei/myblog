@@ -38,9 +38,9 @@
     </article>
 
     <section id="comments">
-        {% if len(article["comments"]) != 0 %}
+        {% if len(article["comment"]) != 0 %}
         <h3>留言</h3>
-        {% for comment in article["comments"] %}
+        {% for comment in article["comment"] %}
         {% module comment(comment) %}
         {% end %}
         {% end %}
@@ -48,8 +48,9 @@
 
     <section id="do_comments">
         <h3>发表留言</h3>
-        <form action="TODO" method="post">
-            <input type="hidden" name="article_id" value = {% raw article["_id"] %}/>
+        <form action="/comment" method="post">
+            {% raw xsrf_form_html() %}
+            <input type="hidden" name="article_id" value = {% raw article["_id"] %}>
             <fieldset id="commenter_info">
                 <legend>评论 </legend>
                 <ol>

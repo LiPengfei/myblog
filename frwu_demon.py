@@ -20,7 +20,7 @@ def add_article(**article):
     now = datetime.datetime.now()
     objson = {
         "posted_date" : now,
-        "comments" : [],
+        "comment" : [],
     }
 
     objson["title"] = article.get("title", "无题")
@@ -135,6 +135,8 @@ if __name__ == "__main__" :
     collec_subcat.drop()
     collec_archive.drop()
     collec_article.drop()
+    collec_user.drop()
+    collec_comment.drop()
 
     article = dict(
         title = "How Many Shoule We Put You Down For ?",
