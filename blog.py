@@ -11,17 +11,9 @@ import random
 import pymongo
 import bson
 import datetime
-
+import markdown
 from tornado.options import options, define
-
 define("port", default = 80, help = "run on the given port", type=int)
-
-# one way.  start with param
-# define("db_name", default = 80, help = "run on the given port", type=int)
-# define("db_password", default = 80, help = "run on the given port", type=int)
-# define("db_user", default = 80, help = "run on the given port", type=int)
-
-# another way. read from file. as bellow comment
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -31,9 +23,8 @@ class Application(tornado.web.Application):
             (r"/category/([^/.]+)", CategoryHandler),
             (r"/category/([^/.]+)/([^/.]+)", SubCategoryHandler),
             (r"/archive/(\d+)", ArchiveHandler),
-            (r"/update_article", UpdateHandler),
+            (r"/update", UpdateHandler),
             (r"/comment", CommentHandler),
-            (r"/login", LoginHandler),
             (r"/auth/login", DoLoginHandler),
             (r"/auth/logout", DoLogoutHandler),
         ]
@@ -44,7 +35,7 @@ class Application(tornado.web.Application):
             static_path = os.path.join(os.path.dirname(__file__), "static"),
             cookie_secret = "bZJc2sWbQLKos6GkHn/VB9oXwQt8S0R0kRvJ5/xJ89E=",
             xsrf_cookies = True,
-            login_url = "/login", # for authenticated decoreactor
+            login_url = "/auth/login", # for authenticated decoreactor
             ui_modules = {
                 "art_summary" : ArtSummaryModule,
                 "comment"    : CommentModule,
@@ -74,7 +65,7 @@ class Application(tornado.web.Application):
             category[v["_id"]] = v
         res = self.db["sub_category"].find()
         subcategory = {}
-        for v in res :
+        for v in res:
             subcategory[v["_id"]] = v
         res = self.db["archive"].find()
         archive = {}
@@ -197,22 +188,20 @@ class ArchiveHandler(BaseHandler):
             sidebar = self.sidebar
         )
 
-
-class LoginHandler(BaseHandler):
-    def get(self):
-        tip = self.get_argument("tip", "loginfo")
-        self.render("login.html", tip = self.application.strings[tip])
-
 class DoLoginHandler(BaseHandler):
     def get(self):
-        pass
+        if self.current_user :
+            self.redirect(self.get_argument("next", "/"))
+            return
+
+        self.render("login.html", tip = self.application.strings["loginfo"])
 
     def post(self):
-        user_name = self.get_argument("user_name")
-        user_password = self.get_argument("user_password")
+        user_name = self.get_argument("user_name", "")
+        user_password = self.get_argument("user_password", "")
         doc = self.db["author"].find_one({"name" : user_name, "password" : user_password})
         if doc == None :
-            self.redirect("/login?tip=errorauth")
+            self.render("login.html", tip = self.application.strings["errorauth"])
         else :
             self.set_secure_cookie("blog_owner", user_name)
             self.redirect(self.get_argument("next", "/"))
@@ -225,42 +214,101 @@ class DoLogoutHandler(BaseHandler):
 class UpdateHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        id = self.get_argument("id", None)
-        self.render("update_article.html")
+        article_id = self.get_argument("article_id", None)
+        if article_id :
+            article = self.db["article"].find_one({"_id": bson.ObjectId(article_id)})
+            self.render("update_article.html", article = article, sidebar = self.sidebar)
+
+        else:
+            self.render("update_article.html", article = None, sidebar = self.sidebar)
 
     @tornado.web.authenticated
     def post(self):
-        id = self.get_argument("id", None)
-        title = self.get_argument("title")
-        text = self.get_argument("markdown")
-        html = markdown.markdown(text)
-        # if id:
-        #     entry = self.db.get("SELECT * FROM entries WHERE id = %s", int(id))
-        #     if not entry: raise tornado.web.HTTPError(404)
-        #     slug = entry.slug
-        #     self.db.execute(
-        #         "UPDATE entries SET title = %s, markdown = %s, html = %s "
-        #         "WHERE id = %s", title, text, html, int(id))
-        # else:
-        #     slug = unicodedata.normalize("NFKD", title).encode(
-        #         "ascii", "ignore")
-        #     slug = re.sub(r"[^\w]+", " ", slug)
-        #     slug = "-".join(slug.lower().strip().split())
-        #     if not slug: slug = "entry"
-        #     while True:
-        #         e = self.db.get("SELECT * FROM entries WHERE slug = %s", slug)
-        #         if not e: break
-        #         slug += "-2"
-        #     self.db.execute(
-        #         "INSERT INTO entries (author_id,title,slug,markdown,html,"
-        #         "published) VALUES (%s,%s,%s,%s,%s,UTC_TIMESTAMP())",
-        #         self.current_user.id, title, slug, text, html)
-        # self.redirect("/entry/" + slug)
+        if self.get_argument("new_article_href", None):
+            self.new_article()
+        else:
+            self.update_article()
+
+    def new_article(self):
+        now = datetime.datetime.now()
+        objson = {
+            "updated_date" : now,
+        }
+
+        objson["title"] = self.get_argument("article_title")
+        objson["aside"] = self.get_argument("article_aside")
+        objson["href"] = self.get_argument("new_article_href")
+        objson["markdown"] = self.get_argument("article_content")
+        objson["author"] = self.current_user
+        objson["content"] = markdown.markdown(objson["markdown"])
+        this_article = self.db["article"].insert_one(objson)
+
+        cat_name = self.get_argument("cat_new", None)
+        subcat_name = self.get_argument("subcat_new", None)
+        if cat_name :
+            if subcat_name :
+                self.add_article_to_subcat(this_article.inserted_id, cat_name, subcat_name)
+            else :
+                self.add_article_to_cat(this_article.inserted_id, cat_name)
+        else :
+            self.add_article_to_cat(this_article.inserted_id, "随笔")
+
+        self.db["archive"].update_one(
+            {"year" : now.year, "month": now.month},
+            {"$push" : {"article" : this_article.inserted_id}},
+            upsert = True)
+
+        self.redirect("/article/%s" %(objson["href"]))
+
+    def update_article(self):
+        now = datetime.datetime.now()
+        objson = {
+            "posted_date" : now,
+        }
+
+        objson["title"] = self.get_argument("article_title")
+        objson["aside"] = self.get_argument("article_aside")
+        objson["href"] =  self.get_argument("article_href")
+        objson["markdown"] = self.get_argument("article_content")
+        objson["author"] = self.current_user
+        objson["content"] = markdown.markdown(objson["markdown"])
+        this_article = self.db["article"].find_one_and_replace({"href" : objson["href"]}, objson)
+        self.redirect("/article/%s" %(objson["href"]))
+
+    def add_article_to_cat(self, article_id, catname):
+        result = self.db["category"].update_one(
+            { "name" : catname },
+            {"$push": {"article" : article_id }},
+            upsert = True)
+
+    def add_article_to_subcat(self, article_id, catname, subcatname):
+        category = self.db["category"].find_one_and_update(
+            {"name" : catname},
+            {"$push" : {"article" : article_id} },
+            upsert = True,
+            return_document=pymongo.collection.ReturnDocument.AFTER
+        )
+        subcatory = self.db["sub_category"].find(
+            {"_id" : {"$in" : category.get("sub", [])}, "name" : subcatname},
+        )
+
+        assert(subcatory.count() <= 1)
+
+        if subcatory.count() != 0 :
+            self.db["sub_category"].find_one_and_update(
+                {"_id" : subcatory[0]["_id"]},
+                {"$push", {"article" : article_id}}
+            )
+        else :
+            subcatory = self.db["sub_category"].insert_one(
+                {"name" : subcatname, "article" : [article_id]}
+            )
+            self.db["category"].find_one_and_update(
+                {"name" : catname},
+                {"$push" : {"sub" : subcatory.inserted_id} },
+            )
 
 class CommentHandler(BaseHandler):
-    def get(self):
-        pass
-
     def post(self):
         article_id_string = self.get_argument("article_id", None)
         if article_id_string == None:
@@ -289,7 +337,6 @@ class CommentHandler(BaseHandler):
             {"_id" : article_id},
             {"$push" : {"comment" : db_comment.inserted_id}})
 
-        print("/article/%s" % (db_article["href"]))
         self.redirect("/article/%s" % (db_article["href"]))
 
 
@@ -300,6 +347,8 @@ class ArtSummaryModule(tornado.web.UIModule):
 class CommentModule(tornado.web.UIModule):
     def render(self, comment):
         comment = self.handler.db["comment"].find_one({"_id" : comment})
+        comment_author = self.handler.db["user"].find_one({"_id" : comment["author"]})
+        comment["author"] = comment_author
         return self.render_string("modules/comment.html", comment = comment)
 
 if __name__ == "__main__" :

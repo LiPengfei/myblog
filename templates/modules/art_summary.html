@@ -1,24 +1,22 @@
 <article class="post">
-	<header>
-		<h2> {% raw article["title"] %}</h2>
-		<p>
-			{% if article.has_key("updated_date") %}
-			Updated by {% raw article["author"] %} on
-			<time>{% raw article["updated_date"].strftime("%Y-%m-%d %H:%M") %}</time>
-			{% else %}
-			Posted by {% raw article["author"] %} on
-			<time>{% raw article["posted_date"].strftime("%Y-%m-%d %H:%M") %}</time>
-			{% end %}
-		</p>
-	</header>
-	{% if article.has_key("aside") %}
-	<aside> {% raw article["aside"] %} </aside>
-	{% end %}
-	{% if article["content"].index("<p>") %}
-	{% end %}
-	{% raw article["content"] %}
-	<footer>
-		<p><a href="/article/{% raw article["href"] %}"> <i>{% raw len(article["comment"]) %} Comments</i></a></p>
-	</footer>
-	<hr class="article_line"/>
+    <header>
+        <h2> {% raw article["title"] %}</h2>
+        <p>
+            {% if article.has_key("updated_date") %}
+            Updated by {% raw article["author"] %} on
+            <time>{% raw article["updated_date"].strftime("%Y-%m-%d %H:%M") %}</time>
+            {% else %}
+            Posted by {% raw article["author"] %} on
+            <time>{% raw article["posted_date"].strftime("%Y-%m-%d %H:%M") %}</time>
+            {% end %}
+        </p>
+    </header>
+    {% if article.has_key("aside") %}
+    <aside> {% raw article["aside"] %} </aside>
+    {% end %}
+    {% raw article["content"] %}
+    <footer>
+        <p> <a href="/article/{% raw article["href"] %}"> <i>{% if article.has_key("comment") %}{% raw len(article["comment"]) %} {% else %} 0 {% end %} Comments</i></a> </p>
+    </footer>
+    <hr class="article_line"/>
 </article>

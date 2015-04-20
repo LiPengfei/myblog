@@ -34,11 +34,15 @@
                     {% end %}
                 </ul>
             </nav>
+            {% if current_user %}
+            <p> <a href="/update?article_id={% raw article["_id"] %}"> <i> 编辑</i></a> </p>
+            {# <p> <a href="/article/{% raw article["href"] %}"> <i> 删除 </i></a> </p> #}
+            {% end %}
         </footer>
     </article>
 
     <section id="comments">
-        {% if len(article["comment"]) != 0 %}
+        {% if article.has_key("comment") %}
         <h3>留言</h3>
         {% for comment in article["comment"] %}
         {% module comment(comment) %}

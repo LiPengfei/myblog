@@ -11,65 +11,70 @@
             <div id = "logo">
                 <h1>WoodhouseSo Blog!</h1>
                 <p>{% block signin %} 天街小雨润如酥，草色遥看近却无 {% end %}</p>
-            <nav>
-                <ul>
-                    <li><a href="/">最近发表</a></li>
-                    <li><a href="/me">个人简历</a></li>
-                </ul>
-            </nav>
+                <nav>
+                    <ul>
+                        <li><a href="/">最近发表</a></li>
+                        <li><a href="/me">个人简历</a></li>
+                        <li><a href="/feed">订阅</a></li>
+                        {% if current_user %}
+                        <li><a href="/update">新文章</a></li>
+                        <li><a href="/auth/logout?next={{ url_escape(request.uri) }}">退出登陆</a></li>
+                        {% end %}
+                    </ul>
+                </nav>
             </div>
         </header>
-		{% block sidebar %}
+        {% block sidebar %}
         <section id="sidebar">
             <nav>
                 <h3>Categories</h3>
                 <ul>
-					{% for k in sidebar["category"] %}
-					<li>
-						<a href= "/category/{% raw sidebar["category"][k]["name"] %}">
-							{% raw sidebar["category"][k]["name"] %}
-							{% if sidebar["category"][k].has_key("article") %}
-							({% raw len(sidebar["category"][k]["article"]) %})
-							{% end %}
-						</a>
-						{% if sidebar["category"][k].has_key("sub") %}
-						<ul>
-							{% for sk in sidebar["category"][k]["sub"] %}
-							<li>
-								<a href= "/category/{% raw sidebar["category"][k]["name"] %}/{% raw sidebar["subcategory"][sk]["name"] %}">
-									{% raw sidebar["subcategory"][sk]["name"] %}
-									{% if sidebar["subcategory"][sk].has_key("article") %}
-									({% raw len(sidebar["subcategory"][sk]["article"]) %})
-									{% end %}
-								</a>
-							</li>
-							{% end %}
-						</ul>
-						{% end %}
-					</li>
-					{% end %}
+                    {% for k in sidebar["category"] %}
+                    <li>
+                        <a href= "/category/{% raw sidebar["category"][k]["name"] %}">
+                            {% raw sidebar["category"][k]["name"] %}
+                            {% if sidebar["category"][k].has_key("article") %}
+                            ({% raw len(sidebar["category"][k]["article"]) %})
+                            {% end %}
+                        </a>
+                        {% if sidebar["category"][k].has_key("sub") %}
+                        <ul>
+                            {% for sk in sidebar["category"][k]["sub"] %}
+                            <li>
+                                <a href= "/category/{% raw sidebar["category"][k]["name"] %}/{% raw sidebar["subcategory"][sk]["name"] %}">
+                                    {% raw sidebar["subcategory"][sk]["name"] %}
+                                    {% if sidebar["subcategory"][sk].has_key("article") %}
+                                    ({% raw len(sidebar["subcategory"][sk]["article"]) %})
+                                    {% end %}
+                                </a>
+                            </li>
+                            {% end %}
+                        </ul>
+                        {% end %}
+                    </li>
+                    {% end %}
                 </ul>
             </nav>
             <nav>
                 <h3>Archives</h3>
                 <ul>
-					{% for k in sidebar["archive"] %}
-					<li>
-						<a href= "/archive/{% raw sidebar["archive"][k]["year"] %}{% raw sidebar["archive"][k]["month"] %}">
-							{% if sidebar["archive"][k]["month"] < 10 %}
-							{% raw sidebar["archive"][k]["year"] %}/0{% raw sidebar["archive"][k]["month"] %}
-							{% else %}
-							{% raw sidebar["archive"][k]["year"] %}/{% raw sidebar["archive"][k]["month"] %}
-							{% end %}
-						</a>
-					</li>
-					{% end %}
+                    {% for k in sidebar["archive"] %}
+                    <li>
+                        <a href= "/archive/{% raw sidebar["archive"][k]["year"] %}{% raw sidebar["archive"][k]["month"] %}">
+                            {% if sidebar["archive"][k]["month"] < 10 %}
+                            {% raw sidebar["archive"][k]["year"] %}/0{% raw sidebar["archive"][k]["month"] %}
+                            {% else %}
+                            {% raw sidebar["archive"][k]["year"] %}/{% raw sidebar["archive"][k]["month"] %}
+                            {% end %}
+                        </a>
+                    </li>
+                    {% end %}
                 </ul>
             </nav>
         </section>
-		{% end %}
+        {% end %}
 
-		{% block content %} {% end %}
+        {% block content %} {% end %}
 
         <footer id="page_footer">
             <p>&copy; 2010 AwesomeCo.</p>

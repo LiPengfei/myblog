@@ -8,22 +8,23 @@
         {{ tip }}
         {% end %}
     </p>
-	<form action="/auth/login" method="post">
-		<fieldset>
-			<ol>
-				<li>
-					<label for="user_name">user:</label>
-					<input name = "user_name" type="text"/>
-				</li>
-				<li>
-					<label for="user_password">password:</label>
-					<input name = "user_password" type="password"/>
-				</li>
-				<li>
-					<input type="submit"/ value="登陆"/>
-				</li>
-			</ol>
-		</fieldset>
-	</form>
+    <form action="/auth/login" method="post">
+        {% raw xsrf_form_html() %}
+        <fieldset>
+            <ol>
+                <li>
+                    <label for="user_name">user:</label>
+                    <input name = "user_name" type="text"/>
+                </li>
+                <li>
+                    <label for="user_password">password:</label>
+                    <input name = "user_password" type="password"/>
+                </li>
+                <li>
+                    <input type="submit"/ value="登陆"/>
+                </li>
+            </ol>
+        </fieldset>
+    </form>
 </section>
 {% end %}

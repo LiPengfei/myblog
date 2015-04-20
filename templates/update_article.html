@@ -1,67 +1,69 @@
 {% extends frame.html %}
-{% block sidebar %} {% end %}
+{# {% block sidebar %} {% end %} #}
 {% block content %}
 <section id="content">
-    <form action="TODO" method="post">
+    <form action="/update" method="post">
+        {% raw xsrf_form_html() %}
         <fieldset>
             <ol>
                 <li>
                     <label for="article_title"> 标题：</label>
-                    <textarea id="article_title" required="required" autocomplete="off" cols=80, rows=1 name="article_title">暂时这样TODO </textarea>
+                    <textarea id="article_title" required="required" autocomplete="off" cols=80, rows=1 name="article_title">
+                        {% if article %}
+                        {% raw article["title"] %}
+                        {% end %}
+                    </textarea>
                 </li>
                 <li>
                     <label for="article_aside"> 旁白：</label>
-                    <textarea id="article_aside" autocomplete="off" cols=80, rows=1 name="article_aside">暂时这样TODO </textarea>
+                    <textarea id="article_aside" autocomplete="off" cols=80, rows=1 name="article_aside">
+                        {% if article and article["aside"] %}
+                        {% raw article["aside"] %}
+                        {% end %}
+                    </textarea>
                 </li>
+                {% if not article %}
                 <li>
-                    <label for="article_href"> 链接：</label>
-                    <input id="article_href" required="required" width= 60% name="article_href"/>
+                    <label for="new_article_href"> 链接：</label>
+                    <input id="article_href" required="required" width= 60% name="new_article_href" />
                 </li>
+                {% else %}
+                <input type = "hidden" name="article_href" value = {% raw article["href"] %} />
+                {% end %}
                 <li>
                     <label for="article_content"> 正文：</label>
-                    <textarea id="article_content" required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >暂时这样TODO </textarea>
+                    <textarea id="article_content" required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >
+                        {% if article %}
+                        {% raw article["markdown"] %}
+                        {% end %}
+                    </textarea>
                 </li>
             </ol>
-            <ol id="update_select">
+
+            {% if not article %}
+            <ol id="article_type">
                 <li>
-                    <label for="cat_select">大类：</label>
-                    <select name="cat_select">
-                        <option value="选择品牌">选择品牌</option>
-                        <option value="选择品牌1">选择品牌1</option>
-                        <option value="选择品牌2">选择品牌2</option>
-                    </select>
-                </li>
-                <li>
-                    <label for="subcat_select">小类：</label>
-                    <select name="subcat_select">
-                        <option value="选择品牌">选择品牌</option>
-                        <option value="选择品牌1">选择品牌1</option>
-                        <option value="选择品牌2">选择品牌2</option>
-                    </select>
-                </li>
-            </ol>
-            <ol id="update_new">
-                <li>
-                    <label for="cat_new">新大类：</label>
+                    <label for="cat_new">大类：</label>
                     <input name = "cat_new" type="text">
                 </li>
                 <li>
-                    <label for="subcat_new">新小类：</label>
+                    <label for="subcat_new">小类：</label>
                     <input name = "subcat_new" type="text">
                 </li>
             </ol>
+            {% end %}
             <ol>
                 <li><input type="submit" value="Submit"></li>
             </ol>
         </fieldset>
     </form>
-</section>
-<section id="comments">
-    <h3>留言</h3>
-    {% if article.has_key("comments") %}
-    {% for comment in article["comments"] %}
-    {% module comment(comment) %}
-    {% end %}
-    {% end %}
+    <section id="comments">
+        {% if article and article.has_key("comment") %}
+        <h3>留言</h3>
+        {% for comment in article["comment"] %}
+        {% module comment(comment) %}
+        {% end %}
+        {% end %}
+    </section>
 </section>
 {% end %}
