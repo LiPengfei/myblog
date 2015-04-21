@@ -8,55 +8,39 @@
             <ol>
                 <li>
                     <label for="article_title"> 标题：</label>
-                    <textarea id="article_title" required="required" autocomplete="off" cols=80, rows=1 name="article_title">
-                        {% if article %}
-                        {% raw article["title"] %}
-                        {% end %}
-                    </textarea>
+                    <input size = "80" required="required" autocomplete="off" name="article_title" {% if article %} value ="{% raw article["title"] %}" {% end %}>
                 </li>
                 <li>
                     <label for="article_aside"> 旁白：</label>
-                    <textarea id="article_aside" autocomplete="off" cols=80, rows=1 name="article_aside">
-                        {% if article and article["aside"] %}
-                        {% raw article["aside"] %}
-                        {% end %}
-                    </textarea>
+                    <textarea autocomplete="off" cols=80, rows=1 name="article_aside"> {% if article and article["aside"] %} {% raw article["aside"] %} {% end %} </textarea>
                 </li>
-                {% if not article %}
-                <li>
-                    <label for="new_article_href"> 链接：</label>
-                    <input id="article_href" required="required" width= 60% name="new_article_href" />
-                </li>
-                {% else %}
+                {% if is_old_article %}
                 <input type = "hidden" name="article_href" value = {% raw article["href"] %} />
+                {% else %}
+                <li>
+                    <label for="article_newhref"> 链接：</label>
+                    <input required="required" width= 60% name="article_newhref" />
+                </li>
+                {% end %}
+                {% if not is_old_article %}
+                <li>
+                    <label for="article_cat">大类：</label>
+                    <input name = "article_cat" type="text">
+                </li>
+                <li>
+                    <label for="article_subcat">小类：</label>
+                    <input name = "article_subcat" type="text">
+                </li>
                 {% end %}
                 <li>
                     <label for="article_content"> 正文：</label>
-                    <textarea id="article_content" required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >
-                        {% if article %}
-                        {% raw article["markdown"] %}
-                        {% end %}
-                    </textarea>
+                    <textarea required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus > {% if article %} {% raw article["markdown"] %} {% end %} </textarea>
                 </li>
-            </ol>
-
-            {% if not article %}
-            <ol id="article_type">
-                <li>
-                    <label for="cat_new">大类：</label>
-                    <input name = "cat_new" type="text">
-                </li>
-                <li>
-                    <label for="subcat_new">小类：</label>
-                    <input name = "subcat_new" type="text">
-                </li>
-            </ol>
-            {% end %}
-            <ol>
-                <li><input type="submit" value="Submit"></li>
+                <li><input type="submit" value="submit"></li>
             </ol>
         </fieldset>
     </form>
+
     <section id="comments">
         {% if article and article.has_key("comment") %}
         <h3>留言</h3>

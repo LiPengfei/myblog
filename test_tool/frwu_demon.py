@@ -9,7 +9,7 @@ import bson
 con = pymongo.MongoClient(host = "localhost", port = 27017, connect = True)
 db  = con.blog
 collec_cat = db["category"]
-collec_subcat = db["sub_category"]
+collec_subcat = db["subcategory"]
 collec_archive = db["archive"]
 collec_article = db["article"]
 collec_author = db["author"]
@@ -26,6 +26,7 @@ def add_article(**article):
     objson["title"] = article.get("title", "无题")
     objson["content"] = article.get("content", "无内容")
     objson["author"] = article.get("author", "李鹏飞")
+    objson["markdown"] = article.get("markdown", "李鹏飞")
     objson["href"] = article.get("href", "rand" + str(uuid.uuid1()))
     objson["tag"]  = article.get("tag", [])
     objson["aside"] = article.get("asise", "")
@@ -156,6 +157,8 @@ if __name__ == "__main__" :
         title = "How Many Shoule We Put You Down For ?",
         content = """<p>Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.</p>
         <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>""",
+        markdown = """Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.
+        Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?""",
         author =  "李鹏飞",
         href = "1",
         tag = ["c/c++", "python"],
@@ -173,8 +176,6 @@ if __name__ == "__main__" :
     add_article(**article)
 
     article["cat_name"] = "测试一级2"
-    add_article(**article)
-
     article["href"] = "4"
     article["subcat_name"] = "测试二级1"
     add_article(**article)

@@ -15,10 +15,9 @@
                     <ul>
                         <li><a href="/">最近发表</a></li>
                         <li><a href="/me">个人简历</a></li>
-                        <li><a href="/feed">订阅</a></li>
                         {% if current_user %}
-                        <li><a href="/update">新文章</a></li>
-                        <li><a href="/auth/logout?next={{ url_escape(request.uri) }}">退出登陆</a></li>
+                        <li><a href="/update">New Post</a></li>
+                        <li><a href="/auth/logout?next={{ url_escape(request.uri) }}">Sign Out</a></li>
                         {% end %}
                     </ul>
                 </nav>
@@ -29,22 +28,22 @@
             <nav>
                 <h3>Categories</h3>
                 <ul>
-                    {% for k in sidebar["category"] %}
+                    {% for category in sidebar["category"] %}
                     <li>
-                        <a href= "/category/{% raw sidebar["category"][k]["name"] %}">
-                            {% raw sidebar["category"][k]["name"] %}
-                            {% if sidebar["category"][k].has_key("article") %}
-                            ({% raw len(sidebar["category"][k]["article"]) %})
+                        <a href= "/category/{% raw category["name"] %}">
+                            {% raw category["name"] %}
+                            {% if category.has_key("article") %}
+                            （{% raw len(category["article"]) %}）
                             {% end %}
                         </a>
-                        {% if sidebar["category"][k].has_key("sub") %}
+                        {% if category.has_key("sub") %}
                         <ul>
-                            {% for sk in sidebar["category"][k]["sub"] %}
+                            {% for subcat_id in category["sub"] %}
                             <li>
-                                <a href= "/category/{% raw sidebar["category"][k]["name"] %}/{% raw sidebar["subcategory"][sk]["name"] %}">
-                                    {% raw sidebar["subcategory"][sk]["name"] %}
-                                    {% if sidebar["subcategory"][sk].has_key("article") %}
-                                    ({% raw len(sidebar["subcategory"][sk]["article"]) %})
+                                <a href= "/category/{% raw category["name"] %}/{% raw sidebar["subcategory"][subcat_id]["name"] %}">
+                                    {% raw sidebar["subcategory"][subcat_id]["name"] %}
+                                    {% if sidebar["subcategory"][subcat_id].has_key("article") %}
+                                    （{% raw len(sidebar["subcategory"][subcat_id]["article"]) %}）
                                     {% end %}
                                 </a>
                             </li>
@@ -58,13 +57,13 @@
             <nav>
                 <h3>Archives</h3>
                 <ul>
-                    {% for k in sidebar["archive"] %}
+                    {% for archive in sidebar["archive"] %}
                     <li>
-                        <a href= "/archive/{% raw sidebar["archive"][k]["year"] %}{% raw sidebar["archive"][k]["month"] %}">
-                            {% if sidebar["archive"][k]["month"] < 10 %}
-                            {% raw sidebar["archive"][k]["year"] %}/0{% raw sidebar["archive"][k]["month"] %}
+                        <a href= "/archive/{% raw archive["year"] %}{% raw archive["month"] %}">
+                            {% if archive["month"] < 10 %}
+                            {% raw archive["year"] %}/0{% raw archive["month"] %}
                             {% else %}
-                            {% raw sidebar["archive"][k]["year"] %}/{% raw sidebar["archive"][k]["month"] %}
+                            {% raw archive["year"] %}/{% raw archive["month"] %}
                             {% end %}
                         </a>
                     </li>
@@ -82,7 +81,7 @@
                 <ul>
                     <li><a href="/">Home</a></li>
                     <li><a href="/me" data-width="400" data-height="500" class = 'popup'>About</a></li>
-                    <li><a href="/feed">Feed</a></li>
+                    <li><a href="/">Feed</a></li>
                     <li><a href="/">Home</a></li>
                 </ul>
             </nav>
