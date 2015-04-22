@@ -12,6 +12,7 @@ import pymongo
 import bson
 import datetime
 import markdown
+import concurrent.futures
 from tornado.options import options, define
 define("port", default = 80, help = "run on the given port", type=int)
 
@@ -100,15 +101,54 @@ class BaseHandler(tornado.web.RequestHandler):
             else:
                 self.write('error:' + str(status_code))
 
-class HomeHandler(BaseHandler):
+class DoLoginHandler(BaseHandler):
     def get(self):
-        articles = self.db["article"].find().sort(
-            [("updated_date", pymongo.DESCENDING),("posted_date", pymongo.DESCENDING)]).limit(20)
+        if self.current_user :
+            self.redirect(self.get_argument("next", "/"))
+            return
+        self.render("login.html", tip = self.application.strings["loginfo"])
+
+    def post(self):
+        user_name = self.get_argument("author_name", "")
+        user_password = self.get_argument("author_password", "")
+        author = self.db["author"].find_one({"name" : user_name, "password" : user_password})
+        if author == None :
+            self.render("login.html", tip = self.application.strings["errorauth"])
+        else :
+            self.set_secure_cookie("blog_owner", user_name)
+            self.redirect(self.get_argument("next", "/"))
+
+class DoLogoutHandler(BaseHandler):
+    def get(self):
+        self.clear_cookie("blog_owner")
+        self.redirect(self.get_argument("next", "/"))
+
+class HomeHandler(BaseHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        articles = yield self.get_data()
         self.render("home.html", articles = articles, sidebar = self.sidebar)
 
+    @tornado.gen.coroutine
+    def get_data(self):
+        return self.db["article"].find().sort(
+            [("updated_date", pymongo.DESCENDING),("posted_date", pymongo.DESCENDING)]).limit(20)
+
 class CategoryHandler(BaseHandler):
+    @tornado.gen.coroutine
     def get(self, url_input):
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+
+        articles = yield self.get_data(url_input)
+        self.render (
+            "home.html",
+            articles = articles,
+            signin = signin,
+            sidebar = self.sidebar
+        )
+
+    @tornado.gen.coroutine
+    def get_data(self, url_input):
         category = self.db["category"].find_one({"name" : url_input})
 
         if category.has_key("article") :
@@ -117,6 +157,15 @@ class CategoryHandler(BaseHandler):
                 [("updated_date", pymongo.DESCENDING),
                  ("posted_date", pymongo.DESCENDING)]
             )
+            return articles
+        return None
+
+class SubCategoryHandler(BaseHandler):
+    @tornado.gen.coroutine
+    def get(self, fathername, name):
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+
+        articles = yield self.get_data(fathername, name)
 
         self.render (
             "home.html",
@@ -125,12 +174,13 @@ class CategoryHandler(BaseHandler):
             sidebar = self.sidebar
         )
 
-class SubCategoryHandler(BaseHandler):
-    def get(self, fathername, name):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
-
+    @tornado.gen.coroutine
+    def get_data(self, fathername, name):
         category = self.db["category"].find_one({"name" : fathername})
-        assert(category["sub"])
+
+        if (not category.has_key("sub")):
+            return None
+
         subcategory = self.db["subcategory"].find_one(
             {"name":name, "_id" : {"$in" : category["sub"]}}
         )
@@ -141,6 +191,15 @@ class SubCategoryHandler(BaseHandler):
                 [("updated_date", pymongo.DESCENDING),
                  ("posted_date", pymongo.DESCENDING)]
             )
+            return articles
+        return None
+
+class ArchiveHandler(BaseHandler):
+    @tornado.gen.coroutine
+    def get(self, archiveinfo):
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+
+        articles = yield self.get_data(archiveinfo)
 
         self.render (
             "home.html",
@@ -149,36 +208,42 @@ class SubCategoryHandler(BaseHandler):
             sidebar = self.sidebar
         )
 
-class ArchiveHandler(BaseHandler):
-    def get(self, archiveinfo):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
-
+    @tornado.gen.coroutine
+    def get_data(self, archiveinfo):
         year = int(archiveinfo[:4])
         month = int(archiveinfo[4:])
 
         archive = self.db["archive"].find_one({"year" : year, "month" : month})
 
         if archive.has_key("article") :
-            articles_cursor = self.db["article"].find(
+            articles = self.db["article"].find(
                 {"_id" : {"$in" : archive["article"]}}).sort(
                 [("updated_date", pymongo.DESCENDING),
                  ("posted_date", pymongo.DESCENDING)]
             )
+            return articles
+        return None
 
-        articles = []
-        for article in articles_cursor :
-            articles.append(article)
-
-        self.render (
-            "home.html",
-            articles = articles,
-            signin = signin,
-            sidebar = self.sidebar
-        )
+# A thread pool to be used for password hashing with bcrypt.
+executor = concurrent.futures.ThreadPoolExecutor(2)
 
 class ArticleHandler(BaseHandler):
+    @tornado.gen.coroutine
     def get(self, url_input):
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+
+        article, previous_article, next_article = yield executor.submit(self.get_data, url_input)
+
+        self.render (
+            "article.html",
+            article = article,
+            signin = signin,
+            sidebar = self.sidebar,
+            previous_article = previous_article,
+            next_article = next_article
+        )
+
+    def get_data(self, url_input):
         articles = self.db["article"].find().sort(
             [("posted_date", pymongo.DESCENDING)])
 
@@ -202,31 +267,25 @@ class ArticleHandler(BaseHandler):
                         title = articles[article_index + 1]["title"]
                     )
             article_index = article_index + 1
-
-        self.render (
-            "article.html",
-            article = article,
-            signin = signin,
-            sidebar = self.sidebar,
-            previous_article = previous_article,
-            next_article = next_article
-        )
+        return article, previous_article, next_article
 
 class MeHandler(BaseHandler):
+    @tornado.gen.coroutine
     def get(self):
         signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
 
-        article = self.db["me"].find_one()
+        article = yield self.get_data()
         if article:
-            self.render("me.html",
-                        article = article,
-                        signin = signin,
-                        )
+            self.render("me.html", article = article, signin = signin)
         else:
             if self.current_user :
                 self.render("editme.html", article = None)
             else:
                 raise tornado.web.HTTPError(404)
+
+    @tornado.gen.coroutine
+    def get_data(self):
+        return self.db["me"].find_one()
 
 class EditMeHandler(BaseHandler):
     @tornado.web.authenticated
@@ -242,28 +301,6 @@ class EditMeHandler(BaseHandler):
         article["content"] = markdown.markdown(article["markdown"])
         this_article = self.db["me"].find_one_and_replace({}, article, upsert = True)
         self.redirect("/me")
-
-class DoLoginHandler(BaseHandler):
-    def get(self):
-        if self.current_user :
-            self.redirect(self.get_argument("next", "/"))
-            return
-        self.render("login.html", tip = self.application.strings["loginfo"])
-
-    def post(self):
-        user_name = self.get_argument("author_name", "")
-        user_password = self.get_argument("author_password", "")
-        author = self.db["author"].find_one({"name" : user_name, "password" : user_password})
-        if author == None :
-            self.render("login.html", tip = self.application.strings["errorauth"])
-        else :
-            self.set_secure_cookie("blog_owner", user_name)
-            self.redirect(self.get_argument("next", "/"))
-
-class DoLogoutHandler(BaseHandler):
-    def get(self):
-        self.clear_cookie("blog_owner")
-        self.redirect(self.get_argument("next", "/"))
 
 class UpdateHandler(BaseHandler):
     @tornado.web.authenticated
@@ -397,7 +434,6 @@ class CommentHandler(BaseHandler):
             {"$push" : {"comment" : comment.inserted_id}})
 
         self.redirect("/article/%s" % (article_href))
-
 
 class ArtSummaryModule(tornado.web.UIModule):
     def render(self, article):
