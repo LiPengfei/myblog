@@ -102,7 +102,7 @@ section#read_guide {
 section#posts aside, section#content aside {
     float: right;
     width: 35%;
-    margin-left: 5%;
+    /* margin-left: 5%; */
     font-size: 20px;
     line-height: 40px;
 }

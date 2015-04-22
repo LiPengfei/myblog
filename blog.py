@@ -27,6 +27,9 @@ class Application(tornado.web.Application):
             (r"/comment", CommentHandler),
             (r"/auth/login", DoLoginHandler),
             (r"/auth/logout", DoLogoutHandler),
+            (r"/me", MeHandler),
+            (r"/editme", EditMeHandler),
+            (r".*", BaseHandler),   # for 404 error
         ]
 
         settings = dict(
@@ -86,49 +89,22 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self): # for authenticated decoreactor
         return self.get_secure_cookie("blog_owner")
 
+    def get(self):
+        self.write_error(404)
+
+    def write_error(self, status_code, **kwargs): # for unhandled exception
+            if status_code == 404:
+                self.render('404_500.html', title = "404啦，您访问的网页不存在。。")
+            elif status_code == 500:
+                self.render('404_500.html', title = "500啦，我们出了一个错误。。")
+            else:
+                self.write('error:' + str(status_code))
+
 class HomeHandler(BaseHandler):
     def get(self):
-
         articles = self.db["article"].find().sort(
             [("updated_date", pymongo.DESCENDING),("posted_date", pymongo.DESCENDING)]).limit(20)
-
         self.render("home.html", articles = articles, sidebar = self.sidebar)
-
-class ArticleHandler(BaseHandler):
-    def get(self, url_input):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
-        articles = self.db["article"].find().sort(
-            [("posted_date", pymongo.DESCENDING)])
-
-        article = None
-        previous_article = None
-        next_article = None
-        article_index = 0
-        article_nums = articles.count()
-
-        while article_index != article_nums :
-            if articles[article_index]["href"] == url_input:
-                article = articles[article_index]
-                if article_index != 0 :
-                    previous_article = dict (
-                        href = articles[article_index - 1]["href"],
-                        title = articles[article_index - 1]["title"]
-                    )
-                if article_index != article_nums - 1 :
-                    next_article = dict (
-                        href = articles[article_index + 1]["href"],
-                        title = articles[article_index + 1]["title"]
-                    )
-            article_index = article_index + 1
-
-        self.render (
-            "article.html",
-            article = article,
-            signin = signin,
-            sidebar = self.sidebar,
-            previous_article = previous_article,
-            next_article = next_article
-        )
 
 class CategoryHandler(BaseHandler):
     def get(self, url_input):
@@ -200,12 +176,78 @@ class ArchiveHandler(BaseHandler):
             sidebar = self.sidebar
         )
 
+class ArticleHandler(BaseHandler):
+    def get(self, url_input):
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        articles = self.db["article"].find().sort(
+            [("posted_date", pymongo.DESCENDING)])
+
+        article = None
+        previous_article = None
+        next_article = None
+        article_index = 0
+        article_nums = articles.count()
+
+        while article_index != article_nums :
+            if articles[article_index]["href"] == url_input:
+                article = articles[article_index]
+                if article_index != 0 :
+                    previous_article = dict (
+                        href = articles[article_index - 1]["href"],
+                        title = articles[article_index - 1]["title"]
+                    )
+                if article_index != article_nums - 1 :
+                    next_article = dict (
+                        href = articles[article_index + 1]["href"],
+                        title = articles[article_index + 1]["title"]
+                    )
+            article_index = article_index + 1
+
+        self.render (
+            "article.html",
+            article = article,
+            signin = signin,
+            sidebar = self.sidebar,
+            previous_article = previous_article,
+            next_article = next_article
+        )
+
+class MeHandler(BaseHandler):
+    def get(self):
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+
+        article = self.db["me"].find_one()
+        if article:
+            self.render("me.html",
+                        article = article,
+                        signin = signin,
+                        )
+        else:
+            if self.current_user :
+                self.render("editme.html", article = None)
+            else:
+                raise tornado.web.HTTPError(404)
+
+class EditMeHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        article = self.db["me"].find_one()
+        self.render("editme.html", article = article)
+
+    @tornado.web.authenticated
+    def post(self):
+        article = {}
+        article["title"] = self.get_argument("article_title")
+        article["markdown"] = self.get_argument("article_content")
+        article["content"] = markdown.markdown(article["markdown"])
+        this_article = self.db["me"].find_one_and_replace({}, article, upsert = True)
+        self.redirect("/me")
+
 class DoLoginHandler(BaseHandler):
     def get(self):
         if self.current_user :
             self.redirect(self.get_argument("next", "/"))
             return
-
         self.render("login.html", tip = self.application.strings["loginfo"])
 
     def post(self):
@@ -359,7 +401,7 @@ class CommentHandler(BaseHandler):
 
 class ArtSummaryModule(tornado.web.UIModule):
     def render(self, article):
-        return self.render_string("modules/art_summary.html", article = article)
+        return self.render_string("modules/art_summary.html", article = article, markdown = markdown.markdown)
 
 class CommentModule(tornado.web.UIModule):
     def render(self, comment):

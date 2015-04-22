@@ -65,6 +65,7 @@
                             {% else %}
                             {% raw archive["year"] %}/{% raw archive["month"] %}
                             {% end %}
+                            （{{ len(archive["article"]) }}）
                         </a>
                     </li>
                     {% end %}
@@ -75,6 +76,7 @@
 
         {% block content %} {% end %}
 
+        {#
         <footer id="page_footer">
             <p>&copy; 2010 AwesomeCo.</p>
             <nav>
@@ -86,5 +88,6 @@
                 </ul>
             </nav>
         </footer>
+        #}
     </body>
 </html>

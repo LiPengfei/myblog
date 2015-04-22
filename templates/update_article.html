@@ -12,7 +12,7 @@
                 </li>
                 <li>
                     <label for="article_aside"> 旁白：</label>
-                    <textarea autocomplete="off" cols=80, rows=1 name="article_aside"> {% if article and article["aside"] %} {% raw article["aside"] %} {% end %} </textarea>
+                    <textarea autocomplete="off" cols=80, rows=1 name="article_aside">{% raw article["aside"] if article else "" %}</textarea>
                 </li>
                 {% if is_old_article %}
                 <input type = "hidden" name="article_href" value = {% raw article["href"] %} />
@@ -34,7 +34,7 @@
                 {% end %}
                 <li>
                     <label for="article_content"> 正文：</label>
-                    <textarea required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus > {% if article %} {% raw article["markdown"] %} {% end %} </textarea>
+                    <textarea required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >{% raw article["markdown"] if article else "" %}</textarea>
                 </li>
                 <li><input type="submit" value="submit"></li>
             </ol>
