@@ -27,13 +27,9 @@
         <footer>
             <nav>
                 <ul>
-                    {% if previous_article %}
-                    <li><a href="/article/{% raw previous_article["href"] %}"> &lt&lt {%raw previous_article["title"] %} </a></li>
-                    {% end %}
-                    <li><a href="/">首页</a></li>
-                    {% if next_article %}
-                    <li><a href="/article/{% raw next_article["href"] %}"> {% raw next_article["title"] %} &gt&gt </a></li>
-                    {% end %}
+                    <li id = "previous_article">&lt&lt{% if previous_article %} <a href="/article/{{ url_escape(previous_article["href"]) }}">{%raw previous_article["title"] %} </a>{% end %}</li>
+                    <li id = "go_home"><a href="/">Home</a></li>
+                    <li id = "next_article"> {% if next_article %}<a href="/article/{{ url_escape(next_article["href"]) }}"> {% raw next_article["title"] %}</a>{% end %} &gt&gt  </li>
                 </ul>
             </nav>
 
@@ -45,19 +41,19 @@
 
     <section id="comments">
         {% if article.has_key("comment") %}
-        {% set article("comment") = article("comment")[::-1] %}
-        {% set floor = 1 %}
+        {% set article["comment"] = article["comment"][::-1] %}
+        {% set floor = len(article["comment"]) %}
         <h3>留言</h3>
         {% for comment in article["comment"] %}
         {% module comment(comment, floor) %}
-        {% set floor = floor + 1 %}
+        {% set floor = floor - 1 %}
         {% end %}
         {% end %}
     </section>
 
     <section>
         <h3>发表留言</h3>
-        <form action="/comment" method="post">
+        <form action="/comment" method="post" id = "comment_form">
             {% raw xsrf_form_html() %}
             <input type="hidden" name="article_href" value = {% raw article["href"] %}>
 
@@ -65,22 +61,22 @@
                 <legend>评论 </legend>
                 <ol>
                     <li>
-                        <label for="name">姓名：</label>
-                        <input type="text" name="comment_name">
+                        <label for="comment_name">姓名：</label>
+                        <input type="text" name="comment_name" required = "required">
                     </li>
                     <li>
-                        <label for="email">email：</label>
-                        <input type="text" name="comment_email" placeholder="me@example.com">
+                        <label for="comment_email">email：</label>
+                        <input type="email" name="comment_email" placeholder="me@example.com" required = "required">
                     </li>
                     <li>
-                        <label for="verify">验证码：</label>
-                        <input type="text" name="verify" placeholder="请输入8" autocomplete = "off">
+                        <label for="comment_verify">验证码（请输入8）：</label>
+                        <input id = "comment_verify" type="text" name="comment_verify" placeholder="请输入8" autocomplete = "off" required = "required">
                     </li>
                     <li>
-                        <label for="comment">输入评论:</label>
-                        <textarea name="comment_content" cols=40 rows=8></textarea>
+                        <label for="comment_content">输入评论:</label>
+                        <textarea name="comment_content" cols=40 rows=8 required = "required"></textarea>
                     </li>
-                    <li><input type="submit" value="submit"></li>
+                    <li><input type="submit" value="submit" id = "comment_submit"></li>
                 </ol>
             </fieldset>
         </form>

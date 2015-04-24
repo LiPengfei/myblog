@@ -43,9 +43,12 @@
 
     <section id="comments">
         {% if article and article.has_key("comment") %}
+        {% set article["comment"] = article["comment"][::-1] %}
+        {% set floor = len(article["comment"]) %}
         <h3>留言</h3>
         {% for comment in article["comment"] %}
-        {% module comment(comment) %}
+        {% module comment(comment, floor) %}
+        {% set floor = floor - 1 %}
         {% end %}
         {% end %}
     </section>

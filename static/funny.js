@@ -29,5 +29,12 @@ function gethttpobject() {
 }
 
 window.onload = function() {
-    // TODO
+    document.getElementById("comment_submit").onclick = function () {
+        if (document.getElementById("comment_verify").value != 8) {
+            alert("验证码不正确！");
+            return false;
+        }
+
+        return true;
+    };
 };

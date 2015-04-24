@@ -65,7 +65,6 @@ class Application(tornado.web.Application):
         # A thread pool to be used for password hashing with bcrypt.
         self.executor = concurrent.futures.ThreadPoolExecutor(2)
 
-
     def getside_bar_info(self):
         sidebar = dict(
             category = [],
@@ -233,21 +232,20 @@ class ArchiveHandler(BaseHandler):
         return None
 
 class ArticleHandler(BaseHandler):
-    # @tornado.gen.coroutine
+    @tornado.gen.coroutine
     def get(self, url_input):
-        self.render("article.html", article = None, signin = "aa", sidebar = self.sidebar, previous_article = None, next_article = None)
-        # signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
 
-        # article, previous_article, next_article = yield self.executor.submit(self.get_data, url_input)
+        article, previous_article, next_article = yield self.executor.submit(self.get_data, url_input)
 
-        # self.render (
-        #     "article.html",
-        #     article = article,
-        #     signin = signin,
-        #     sidebar = self.sidebar,
-        #     previous_article = previous_article,
-        #     next_article = next_article
-        # )
+        self.render (
+            "article.html",
+            article = article,
+            signin = signin,
+            sidebar = self.sidebar,
+            previous_article = previous_article,
+            next_article = next_article
+        )
 
     def get_data(self, url_input):
         articles = self.db["article"].find().sort(
@@ -329,6 +327,7 @@ class UpdateHandler(BaseHandler):
         now = datetime.datetime.now()
         article = {
             "posted_date" : now,
+            "updated_date" : now,
         }
 
         article["href"] = "%d/%d/%d/%s" % (now.year, now.month, now.day, self.get_argument("article_newhref"))
@@ -340,7 +339,7 @@ class UpdateHandler(BaseHandler):
 
         if self.db["article"].find_one({"href" : article["href"]}) :
             self.render("update_article.html", article = article, sidebar = self.sidebar, is_old_article = False)
-            return 
+            return
 
         this_article = self.db["article"].insert_one(article)
 
@@ -414,6 +413,11 @@ class CommentHandler(BaseHandler):
         article_href = self.get_argument("article_href", None)
         if article_href == None:
             raise tornado.web.HTTPError(404)
+
+        comment_name = self.get_argument("comment_verify")
+        if comment_name != "8":
+            self.redirect("/article/%s" % (article_href))
+            return
 
         comment_name = self.get_argument("comment_name", "")
         comment_email = self.get_argument("comment_email", "")
