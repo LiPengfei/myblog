@@ -32,9 +32,6 @@ def add_article(**article):
     objson["aside"] = article.get("asise", "")
     this_article = collec_article.insert_one(objson)
 
-    if article.has_key("previous_id") :
-        add_article_to_list(this_article.inserted_id, article["previous_id"])
-
     if article.has_key("cat_name") :
         if article.has_key("subcat_name") :
             add_article_to_subcat(this_article.inserted_id, article["cat_name"], article["subcat_name"])
@@ -154,7 +151,7 @@ if __name__ == "__main__" :
     collec_comment.drop()
 
     article = dict(
-        title = "How Many Shoule We Put You Down For ?",
+        title = "How Many Should We Put You Down For ?",
         content = """<p>Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.</p>
         <p>Dolor labore dolorem possimus saepe aperiam ducimus? At corporis iste minima voluptates ducimus. Deserunt consequuntur officiis veritatis eius aut dolorem! Error atque voluptatibus fuga sit praesentium. Esse modi porro eos?</p>""",
         markdown = """Sit asperiores illo doloremque ducimus iure. Obcaecati corporis saepe itaque et vitae iste impedit aspernatur. Veniam dicta voluptatum ipsa doloremque unde quibusdam? Neque perspiciatis beatae magnam ipsam doloremque dolor repellendus.

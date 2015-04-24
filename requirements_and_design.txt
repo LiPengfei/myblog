@@ -1,0 +1,24 @@
+futures
+markdown
+tornado
+pymongo
+
+=================================================
+db design
+=================================================
+db_name: blog
+
+collections:
+大类	category	{"name" : "", "sub" : [_id1 ...], "article" : [_id1 ...]}	unique : name
+小类	subcategory	{"name" : "", "article" : [_id1 ...]}
+日期	archive	{"year" : dddd, "month" : dd, "article" : [_id1 ...]}	unique : (year, month)
+博文	article	{"title" : "", "markdown" : "", "content" : "", "aside" : "", "author" : _id, "posted_date" : datetime, "updated_date" : datetime(N/A), "comment" : [_id1 ...], "href" : ""}	unique : href
+博主	author	{"name" : "", "email" : "", "passwrod" : ""}	unique : name
+游客	user	{"name" : "", "email" : ""}	    unique : (name, email)
+评论	comment	{"content" : "", "posted_time" : datetime, "author" : _id}
+
+tools:
+author_tool.py    添加/删除一个author
+delete_article.py 删除一个blog
+delete_comment.py 删除一个comment
+delete_user.py    删除一个user

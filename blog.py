@@ -62,6 +62,10 @@ class Application(tornado.web.Application):
             "errorauth" : "用户名或者密码错误",
         }
 
+        # A thread pool to be used for password hashing with bcrypt.
+        self.executor = concurrent.futures.ThreadPoolExecutor(2)
+
+
     def getside_bar_info(self):
         sidebar = dict(
             category = [],
@@ -86,6 +90,10 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def sidebar(self):
         return self.application.getside_bar_info()
+
+    @property
+    def executor(self):
+        return self.application.executor
 
     def get_current_user(self): # for authenticated decoreactor
         return self.get_secure_cookie("blog_owner")
@@ -224,24 +232,22 @@ class ArchiveHandler(BaseHandler):
             return articles
         return None
 
-# A thread pool to be used for password hashing with bcrypt.
-executor = concurrent.futures.ThreadPoolExecutor(2)
-
 class ArticleHandler(BaseHandler):
-    @tornado.gen.coroutine
+    # @tornado.gen.coroutine
     def get(self, url_input):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        self.render("article.html", article = None, signin = "aa", sidebar = self.sidebar, previous_article = None, next_article = None)
+        # signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
 
-        article, previous_article, next_article = yield executor.submit(self.get_data, url_input)
+        # article, previous_article, next_article = yield self.executor.submit(self.get_data, url_input)
 
-        self.render (
-            "article.html",
-            article = article,
-            signin = signin,
-            sidebar = self.sidebar,
-            previous_article = previous_article,
-            next_article = next_article
-        )
+        # self.render (
+        #     "article.html",
+        #     article = article,
+        #     signin = signin,
+        #     sidebar = self.sidebar,
+        #     previous_article = previous_article,
+        #     next_article = next_article
+        # )
 
     def get_data(self, url_input):
         articles = self.db["article"].find().sort(
@@ -261,7 +267,7 @@ class ArticleHandler(BaseHandler):
                         href = articles[article_index - 1]["href"],
                         title = articles[article_index - 1]["title"]
                     )
-                if article_index != article_nums - 1 :
+                if (article_index + 1) < article_nums :
                     next_article = dict (
                         href = articles[article_index + 1]["href"],
                         title = articles[article_index + 1]["title"]
@@ -325,7 +331,7 @@ class UpdateHandler(BaseHandler):
             "posted_date" : now,
         }
 
-        article["href"] = "%d/%d/%s" % (now.year, now.month, self.get_argument("article_newhref"))
+        article["href"] = "%d/%d/%d/%s" % (now.year, now.month, now.day, self.get_argument("article_newhref"))
         article["title"] = self.get_argument("article_title")
         article["aside"] = self.get_argument("article_aside")
         article["markdown"] = self.get_argument("article_content")
@@ -440,11 +446,11 @@ class ArtSummaryModule(tornado.web.UIModule):
         return self.render_string("modules/art_summary.html", article = article, markdown = markdown.markdown)
 
 class CommentModule(tornado.web.UIModule):
-    def render(self, comment):
+    def render(self, comment, floor):
         comment = self.handler.db["comment"].find_one({"_id" : comment})
         comment_author = self.handler.db["user"].find_one({"_id" : comment["author"]})
         comment["author"] = comment_author
-        return self.render_string("modules/comment.html", comment = comment)
+        return self.render_string("modules/comment.html", comment = comment, floor = floor)
 
 if __name__ == "__main__" :
     tornado.options.parse_command_line()
