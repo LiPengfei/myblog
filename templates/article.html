@@ -29,7 +29,7 @@
                 <ul>
                     <li id = "previous_article">&lt&lt{% if previous_article %} <a href="/article/{{ url_escape(previous_article["href"]) }}">{%raw previous_article["title"] %} </a>{% end %}</li>
                     <li id = "go_home"><a href="/">Home</a></li>
-                    <li id = "next_article"> {% if next_article %}<a href="/article/{{ url_escape(next_article["href"]) }}"> {% raw next_article["title"] %}</a>{% end %} &gt&gt  </li>
+                    <li id = "next_article"> {% if next_article %}<a href="/article/{{ url_escape(next_article["href"]) }}"> {% raw next_article["title"] %}&gt&gt</a>{% else %}<a >&gt&gt<a/> {% end %}</li>
                 </ul>
             </nav>
 

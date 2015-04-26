@@ -36,7 +36,7 @@ class Application(tornado.web.Application):
         ]
 
         settings = dict(
-            blog_title = u"Hello World!",
+            blog_title = "Hello World!",
             template_path = os.path.join(os.path.dirname(__file__), "templates"),
             static_path = os.path.join(os.path.dirname(__file__), "static"),
             cookie_secret = "bZJc2sWbQLKos6GkHn/VB9oXwQt8S0R0kRvJ5/xJ89E=",
