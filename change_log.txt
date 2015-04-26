@@ -14,7 +14,7 @@
 11. 简单的验证码功能
 12. 博主密码加密
 13. tools : author_create、author_modify、article_delete、comment_delete 加入， user_delete 不做
-14. tools : 
+14. tools : 测试通过
     14.1 author_create 测试完成 
     14.2 author_modify -d -mn -mp -me 测试完成
     14.3 article_delete 测试覆盖
@@ -26,3 +26,6 @@
         5. 删除带评论的文章时删除评论
         6. 删除时archive递减，为0时删除archive
     14.4 comment_delete
+        0. 删除不存在的文章的楼
+        1. 删除文章不存在的楼
+        2. 删除正确文章正确的楼

@@ -13,15 +13,16 @@ if __name__ == "__main__" :
 
     db = pymongo.MongoClient()["blog"]
 
-    article = db.find_one({"href" : args.href})
+    article = db["article"].find_one({"href" : args.href})
     if article :
         if (article["comment"] and len(article["comment"]) > args.floor) :
             comment_id = article["comment"][args.floor]
-            db.find_one_and_update(
+            db["article"].find_one_and_update(
                 {"href" : args.href},
-                {"$pull" : comment_id}
+                {"$pull" :{"comment" : comment_id}}
             )
-            db["comment"].find_one_and_delete({"_id", comment_id})
+            db["comment"].find_one_and_delete({"_id" : comment_id})
+            print("article %s delete floor %d success" %(args.href, args.floor))
         else:
             print("article %s has no floor %d" %(args.href, args.floor))
     else :

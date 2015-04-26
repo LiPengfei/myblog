@@ -1,14 +1,10 @@
 body {
     width: 960px;
     margin: 15px auto;
-    font: normal 14px  Arial, Helvetica, sans-serif, "宋体";
+    font: normal 14px  Arial, Helvetica, sans-serif, "宋体", "微软雅黑", "华文仿宋";
+    word-break:break-all;
+    word-wrap: break-word;
 }
-
-/* body#article { */
-/*     width: 60%; */
-/*     margin: 15px auto; */
-/*     font: normal 14px  Arial, Helvetica, sans-serif, "宋体"; */
-/* } */
 
 a {
     color: black;
@@ -110,7 +106,6 @@ li#go_home {
 section#posts aside, section#content aside {
     float: right;
     width: 35%;
-    /* margin-left: 5%; */
     font-size: 20px;
     line-height: 40px;
 }
