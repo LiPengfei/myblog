@@ -13,6 +13,8 @@ import bson
 import datetime
 import markdown
 import concurrent.futures
+import bcrypt
+
 from tornado.options import options, define
 define("port", default = 80, help = "run on the given port", type=int)
 
@@ -62,7 +64,6 @@ class Application(tornado.web.Application):
             "errorauth" : "用户名或者密码错误",
         }
 
-        # A thread pool to be used for password hashing with bcrypt.
         self.executor = concurrent.futures.ThreadPoolExecutor(2)
 
     def getside_bar_info(self):
@@ -116,14 +117,19 @@ class DoLoginHandler(BaseHandler):
         self.render("login.html", tip = self.application.strings["loginfo"])
 
     def post(self):
-        user_name = self.get_argument("author_name", "")
-        user_password = self.get_argument("author_password", "")
-        author = self.db["author"].find_one({"name" : user_name, "password" : user_password})
+        author_name = self.get_argument("author_name", "")
+        author_password = self.get_argument("author_password", "")
+
+        author = self.db["author"].find_one({"name" : author_name})
         if author == None :
             self.render("login.html", tip = self.application.strings["errorauth"])
         else :
-            self.set_secure_cookie("blog_owner", user_name)
-            self.redirect(self.get_argument("next", "/"))
+            hashed_password = bcrypt.hashpw(author_password.encode("utf-8"), author["password"].encode("utf-8"))
+            if hashed_password == author["password"] :
+                self.set_secure_cookie("blog_owner", author_name)
+                self.redirect(self.get_argument("next", "/"))
+            else :
+                self.render("login.html", tip = self.application.strings["errorauth"])
 
 class DoLogoutHandler(BaseHandler):
     def get(self):

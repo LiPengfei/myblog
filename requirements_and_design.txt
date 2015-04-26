@@ -2,6 +2,7 @@ futures
 markdown
 tornado
 pymongo
+bcrypt
 
 =================================================
 db design
