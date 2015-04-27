@@ -14,6 +14,10 @@ import datetime
 import markdown
 import concurrent.futures
 import bcrypt
+import json
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 from tornado.options import options, define
 define("port", default = 80, help = "run on the given port", type=int)
@@ -52,17 +56,8 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers, **settings)
         self.db = pymongo.MongoClient()["blog"]
 
-        self.signins = [
-            "天街小雨润如酥，草色遥看近却无",
-            "最是一年春好处， 绝胜烟柳满皇都",
-            "孤舟蓑笠翁，独钓寒江雪",
-            "我住长江头，君住长江尾，日日思君不见君，共饮长江水",
-            "会挽雕弓如满月，西北望，射天狼"
-        ]
-        self.strings = {
-            "loginfo" : "请输入用户名和密码",
-            "errorauth" : "用户名或者密码错误",
-        }
+        setting_file = file("setting.json")
+        self.setting = json.load(setting_file)
 
         self.executor = concurrent.futures.ThreadPoolExecutor(2)
 
@@ -81,6 +76,26 @@ class Application(tornado.web.Application):
 
         sidebar["archive"] = self.db["archive"].find()
         return sidebar
+
+    def sendmail(self, subject, content):
+        smtp = smtplib.SMTP()
+        smtp.connect(self.setting["smtp_info"]["smtpserver"])
+        smtp.starttls()
+        smtp.login(self.setting["smtp_info"]["username"],
+                  self.setting["smtp_info"]["password"])
+
+        msg = MIMEMultipart()
+        msg["From"] = self.setting["smtp_info"]["username"]
+        msg["To"] = self.setting["smtp_info"]["target"]
+        msg["Subject"] = subject 
+        txt = MIMEText(content)
+        msg.attach(txt)
+
+        smtp.sendmail(msg["From"], msg["To"], msg.as_string())
+        smtp.quit()
+
+    def getsignins(self):
+        return self.setting["signins"][random.randint(0, len(self.setting["signins"]) - 1)]
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -114,7 +129,7 @@ class DoLoginHandler(BaseHandler):
         if self.current_user :
             self.redirect(self.get_argument("next", "/"))
             return
-        self.render("login.html", tip = self.application.strings["loginfo"])
+        self.render("login.html", tip = self.application.setting["auth_info"]["loginfo"])
 
     def post(self):
         author_name = self.get_argument("author_name", "")
@@ -122,14 +137,14 @@ class DoLoginHandler(BaseHandler):
 
         author = self.db["author"].find_one({"name" : author_name})
         if author == None :
-            self.render("login.html", tip = self.application.strings["errorauth"])
+            self.render("login.html", tip = self.application.setting["auth_info"]["errorauth"])
         else :
             hashed_password = bcrypt.hashpw(author_password.encode("utf-8"), author["password"].encode("utf-8"))
             if hashed_password == author["password"] :
                 self.set_secure_cookie("blog_owner", author_name)
                 self.redirect(self.get_argument("next", "/"))
             else :
-                self.render("login.html", tip = self.application.strings["errorauth"])
+                self.render("login.html", tip = self.application.setting["auth_info"]["errorauth"])
 
 class DoLogoutHandler(BaseHandler):
     def get(self):
@@ -150,7 +165,7 @@ class HomeHandler(BaseHandler):
 class CategoryHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self, url_input):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        signin = self.application.getsignins()
 
         articles = yield self.get_data(url_input)
         self.render (
@@ -176,7 +191,7 @@ class CategoryHandler(BaseHandler):
 class SubCategoryHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self, fathername, name):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        signin = self.application.getsignins()
 
         articles = yield self.get_data(fathername, name)
 
@@ -210,7 +225,7 @@ class SubCategoryHandler(BaseHandler):
 class ArchiveHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self, archiveinfo):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        signin = self.application.getsignins()
 
         articles = yield self.get_data(archiveinfo)
 
@@ -240,7 +255,7 @@ class ArchiveHandler(BaseHandler):
 class ArticleHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self, url_input):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        signin = self.application.getsignins()
 
         article, previous_article, next_article = yield self.executor.submit(self.get_data, url_input)
 
@@ -282,7 +297,7 @@ class ArticleHandler(BaseHandler):
 class MeHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
-        signin = self.application.signins[random.randint(0, len(self.application.signins) - 1)]
+        signin = self.application.getsignins()
 
         article = yield self.get_data()
         if article:
@@ -310,6 +325,11 @@ class EditMeHandler(BaseHandler):
         article["markdown"] = self.get_argument("article_content")
         article["content"] = markdown.markdown(article["markdown"])
         this_article = self.db["me"].find_one_and_replace({}, article, upsert = True)
+
+        self.executor.submit(self.application.sendmail,
+                             article["title"],
+                             this_article["markdown"].encode("utf-8"))
+
         self.redirect("/me")
 
 class UpdateHandler(BaseHandler):
@@ -364,25 +384,33 @@ class UpdateHandler(BaseHandler):
             {"$push" : {"article" : this_article.inserted_id}},
             upsert = True)
 
+        self.executor.submit(self.application.sendmail,
+                             article["href"],
+                             article["markdown"].encode("utf-8"))
+
         self.redirect("/article/%s" %(article["href"]))
 
     def update_article(self):
         now = datetime.datetime.now()
-        article = {
-            "updated_date" : now,
-        }
 
-        article["title"] = self.get_argument("article_title")
-        article["aside"] = self.get_argument("article_aside")
-        article["href"] =  self.get_argument("article_href")
-        article["markdown"] = self.get_argument("article_content")
-        article["author"] = self.current_user
-        article["content"] = markdown.markdown(article["markdown"])
-        this_article = self.db["article"].find_one_and_replace({"href" : article["href"]}, article)
-        self.redirect("/article/%s" %(article["href"]))
+        this_article = self.db["article"].find_one_and_update(
+            {"href" : self.get_argument("article_href")},
+            {
+                "$set" : {"title" : self.get_argument("article_title")},
+                "$set" : {"aside" : self.get_argument("article_aside")},
+                "$set" : {"markdown" : markdown.markdown(self.get_argument("article_content"))},
+                "$set" : {"content" : self.get_argument("article_content")},
+                "$set" : {"updated_date" : now}
+            })
+
+        self.executor.submit(self.application.sendmail,
+                             this_article["href"],
+                             this_article["markdown"].encode("utf-8"))
+
+        self.redirect("/article/%s" %(this_article["href"]))
 
     def add_article_to_cat(self, article_id, catname):
-        result = self.db["category"].update_one(
+        self.db["category"].update_one(
             {"name" : catname},
             {"$push": {"article" : article_id }},
             upsert = True)

@@ -1,0 +1,21 @@
+{
+    "signins" : [
+        "天街小雨润如酥，草色遥看近却无",
+        "最是一年春好处， 绝胜烟柳满皇都",
+        "孤舟蓑笠翁，独钓寒江雪",
+        "我住长江头，君住长江尾，日日思君不见君，共饮长江水",
+        "会挽雕弓如满月，西北望，射天狼"
+    ],
+
+    "auth_info" : {
+        "loginfo" : "请输入用户名和密码",
+        "errorauth" : "用户名或者密码错误"
+    },
+
+    "smtp_info" : {
+        "username" : "xxxx@hotmail.com",
+        "password" : "xxxxxxxx",
+        "smtpserver" : "smtp-mail.outlook.com",
+        "target" : "xxxxxx"
+    }
+}

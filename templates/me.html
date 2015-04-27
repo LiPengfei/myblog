@@ -1,5 +1,9 @@
 {% extends frame.html %}
 
+{% block css_file %}
+<link rel="stylesheet" href="/static/me.css" type = "text/css">
+{% end %}
+
 {% block sidebar %} {% end %}
 
 {% block signin%}
@@ -11,9 +15,9 @@
     <header>
     </header>
     <article class="post">
-        <header>
-            <h2>{% raw article["title"] %}</h2>
-        </header>
+        {# <header>
+             <h2>{% raw article["title"] %}</h2>
+        </header> #}
         {% raw article["content"] %}
         <footer>
             {% if current_user %}

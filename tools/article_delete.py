@@ -53,7 +53,6 @@ if __name__ == "__main__" :
             return_document=pymongo.collection.ReturnDocument.AFTER
         )
 
-        print("LI>>>>>>>>>>>>>>>>", archive)
         if archive and len(archive["article"]) == 0 :
             db["archive"].delete_one({"_id": archive["_id"]})
 
