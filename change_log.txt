@@ -1,31 +1,31 @@
-1. ��̬չʾҳ�����ơ�
-2. tornado ���룬tornadoģ����룬tornado extern ģ����룬tornado ui module ���롣
-3. mongodb ��ȡ���롣
-4. mongodb ����롣
-5. ��ȫcookie ���롣
-6. �޸Ĵ���
-    6.1 ������ҳ���ϵ�article �����û�Ϊ href�� �ڲ�����ȫ������objectId������
-    6.2 href ���������⴦��
-    6.3 ͳһ������ ��_С
-7. ��һƪ��һƪ ����
-8. markdown���� �����б�����ʾ����
-9. ����ʱ����(��ȡ��һƪ��һƪ)����һ���߳���ɡ�ThreadPoolExecutor ���롣
-10. ��������¥�㣬������������������ʾ
-11. �򵥵���֤�빦��
-12. �����������
-13. tools : author_create��author_modify��article_delete��comment_delete ���룬 user_delete ����
-14. tools : ����ͨ��
-    14.1 author_create ������� 
-    14.2 author_modify -d -mn -mp -me �������
-    14.3 article_delete ���Ը���
-        0. ɾ�������ڵ�����
-        1. ɾ��ĳ�������һƪ����ʱɾ������
-        2. ɾ��ĳ��������һƪ����ʱ��ɾ������
-        3. ɾ��ĳ��������һƪ����ʱ��ɾ������
-        4. ɾ��ĳ�������һƪ����ʱɾ������ 
-        5. ɾ�������۵�����ʱɾ������
-        6. ɾ��ʱarchive�ݼ���Ϊ0ʱɾ��archive
+﻿1. 静态展示页面的设计。
+2. tornado 接入，tornado模板接入，tornado extern 模板接入，tornado ui module 接入。
+3. mongodb 读取接入。
+4. mongodb 存接入。
+5. 安全cookie 接入。
+6. 修改代码
+    6.1 将所有页面上的article 的引用换为 href。 内部代码全部都用objectId做引用
+    6.2 href 的生成特殊处理
+    6.3 统一代码风格 大_小
+7. 上一篇下一篇 添加
+8. markdown接入 文章列表简单显示内容
+9. 将超时操作(获取上一篇下一篇)单独一个线程完成。ThreadPoolExecutor 接入。
+10. 评论添加楼层，最新评论在最上面显示
+11. 简单的验证码功能
+12. 博主密码加密
+13. tools : author_create、author_modify、article_delete、comment_delete 加入， user_delete 不做
+14. tools : 测试通过
+    14.1 author_create 测试完成 
+    14.2 author_modify -d -mn -mp -me 测试完成
+    14.3 article_delete 测试覆盖
+        0. 删除不存在的文章
+        1. 删除某子类最后一篇文章时删除子类
+        2. 删除某子类非最后一篇文章时不删除子类
+        3. 删除某大类非最后一篇文章时不删除大类
+        4. 删除某大类最后一篇文章时删除大类 
+        5. 删除带评论的文章时删除评论
+        6. 删除时archive递减，为0时删除archive
     14.4 comment_delete
-        0. ɾ�������ڵ����µ�¥
-        1. ɾ�����²����ڵ�¥
-        2. ɾ����ȷ������ȷ��¥
+        0. 删除不存在的文章的楼
+        1. 删除文章不存在的楼
+        2. 删除正确文章正确的楼
