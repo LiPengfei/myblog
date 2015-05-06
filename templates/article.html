@@ -12,13 +12,13 @@
         <header>
             <h2>{% raw article["title"] %}</h2>
             <p>
-                {% if article.has_key("updated_date") %}
-                Updated by {% raw article["author"] %} on
-                <time>{{ article["updated_date"].strftime("%Y-%m-%d %H:%M") }}</time>
-                {% else %}
-                Posted by {% raw article["author"] %} on
-                <time>{% raw article["posted_date"].strftime("%Y-%m-%d %H:%M") %}</time>
-                {% end %}
+            {% if article["updated_date"] != article["posted_date"] %}
+            Updated by {% raw article["author"] %} on
+            <time>{% raw article["updated_date"].strftime("%Y-%m-%d %H:%M") %}</time>
+            {% else %}
+            Posted by {% raw article["author"] %} on
+            <time>{% raw article["posted_date"].strftime("%Y-%m-%d %H:%M") %}</time>
+            {% end %}
             </p>
         </header>
 

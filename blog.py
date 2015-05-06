@@ -87,7 +87,7 @@ class Application(tornado.web.Application):
         msg = MIMEMultipart()
         msg["From"] = self.setting["smtp_info"]["username"]
         msg["To"] = self.setting["smtp_info"]["target"]
-        msg["Subject"] = subject 
+        msg["Subject"] = subject
         txt = MIMEText(content)
         msg.attach(txt)
 
