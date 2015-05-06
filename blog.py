@@ -328,7 +328,7 @@ class EditMeHandler(BaseHandler):
 
         self.executor.submit(self.application.sendmail,
                              article["title"],
-                             this_article["markdown"].encode("utf-8"))
+                             article["markdown"].encode("utf-8"))
 
         self.redirect("/me")
 
