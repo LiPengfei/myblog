@@ -11,7 +11,10 @@ body {
 a {
     color: black;
 }
-a:hover {color: gray;}
+
+a:hover {
+    color: gray;
+}
 
 p {
     margin: 0 0 20px 0;
@@ -93,12 +96,6 @@ li#previous_article {
     text-align: right;
     width: 40%;
 }
-
-/*li#next_article {
-    float: right;
-    text-align: left;
-    width: 50%;
-}*/
 
 li#go_home {
     float: left;
