@@ -14,11 +14,13 @@ div#logo nav {
     width: 100%;
 }
 
-a {
+sidebar a, footer a, header a{
     color: black;
 }
 
-a:hover {color: gray;}
+sidebar a:hover, footer a:hover, header a:hover {
+    color: gray;
+}
 
 header#page_header nav ul li, footer#page_footer nav ul li {
     padding: 0;
