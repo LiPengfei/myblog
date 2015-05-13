@@ -398,8 +398,8 @@ class UpdateHandler(BaseHandler):
             {"$set" : {
                     "title" : self.get_argument("article_title"),
                     "aside" : self.get_argument("article_aside"),
-                    "markdown" : markdown.markdown(self.get_argument("article_content")),
-                    "content" : self.get_argument("article_content"),
+                    "content" : markdown.markdown(self.get_argument("article_content")),
+                    "markdown" : self.get_argument("article_content"),
                     "updated_date" : now
                 }
             })
