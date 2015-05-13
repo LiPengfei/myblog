@@ -395,12 +395,13 @@ class UpdateHandler(BaseHandler):
 
         this_article = self.db["article"].find_one_and_update(
             {"href" : self.get_argument("article_href")},
-            {
-                "$set" : {"title" : self.get_argument("article_title")},
-                "$set" : {"aside" : self.get_argument("article_aside")},
-                "$set" : {"markdown" : markdown.markdown(self.get_argument("article_content"))},
-                "$set" : {"content" : self.get_argument("article_content")},
-                "$set" : {"updated_date" : now}
+            {"$set" : {
+                    "title" : self.get_argument("article_title"),
+                    "aside" : self.get_argument("article_aside"),
+                    "markdown" : markdown.markdown(self.get_argument("article_content")),
+                    "content" : self.get_argument("article_content"),
+                    "updated_date" : now
+                }
             })
 
         self.executor.submit(self.application.sendmail,
