@@ -8,11 +8,11 @@ body {
     font-family: Helvetica,arial,freesans,clean,sans-serif;
 }
 
-section#sidebar a, footer a, header a{
+section#sidebar a, header a{
     color: black;
 }
 
-section#sidebar a:hover, footer a:hover, header a:hover {
+section#sidebar a:hover, header a:hover {
     color: gray;
 }
 
