@@ -402,7 +402,9 @@ class UpdateHandler(BaseHandler):
                     "markdown" : self.get_argument("article_content"),
                     "updated_date" : now
                 }
-            })
+            },
+            return_document=pymongo.collection.ReturnDocument.AFTER
+        )
 
         self.executor.submit(self.application.sendmail,
                              this_article["href"],
