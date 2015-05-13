@@ -16,6 +16,7 @@ div#logo nav {
 
 section#sidebar a, header a{
     color: black;
+    text-decoration: none;
 }
 
 section#sidebar a:hover, header a:hover {
