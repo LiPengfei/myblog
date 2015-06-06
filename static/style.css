@@ -12,6 +12,9 @@ section#sidebar a, header a{
     color: black;
 }
 
+footer {
+    margin-top: 50px;
+}
 section#sidebar a:hover, header a:hover {
     color: gray;
     text-decoration: none;
@@ -245,4 +248,10 @@ ol#update_select li{
 ol#update_select input, ol#update_select select, ol#update_new input {
     display: inline;
     margin-right: 20px;
+}
+
+footer#body_footer {
+margin-top: 40px;
+float: left;
+width: 100%;
 }

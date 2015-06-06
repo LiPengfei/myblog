@@ -6,12 +6,12 @@
         <link rel="stylesheet" href="{{ static_url("style.css") }}" type = "text/css">
         {% end %}
         <script src= "{{ static_url("funny.js") }}" type="text/javascript" charset="utf-8"></script>
-        <title>Woodenhouse's Blog</title>
+        <title>Woodenhouse Blog</title>
     </head>
     <body id = "index">
         <header id="page_header">
             <div id = "logo">
-                <h1>WoodhouseSo Blog!</h1>
+                <h1>Woodman's House! </h1>
                 <p>{% block signin %} 天街小雨润如酥，草色遥看近却无 {% end %}</p>
                 <nav>
                     <ul>
@@ -42,7 +42,7 @@
                         <ul>
                             {% for subcat_id in category["sub"] %}
                             <li>
-                                <a href= "/category/{% raw category["name"] %}/{% raw sidebar["subcategory"][subcat_id]["name"] %}">
+                                <a href= "/subcategory/{% raw category["name"] %}/{% raw sidebar["subcategory"][subcat_id]["name"] %}">
                                     {% raw sidebar["subcategory"][subcat_id]["name"] %}
                                     {% if sidebar["subcategory"][subcat_id].has_key("article") %}
                                     （{% raw len(sidebar["subcategory"][subcat_id]["article"]) %}）
@@ -77,5 +77,8 @@
         {% end %}
 
         {% block content %} {% end %}
+        <footer id = "body_footer">
+            <p>联系方式：lipengfei519@hotmail.com</p>
+        </footer>
     </body>
 </html>

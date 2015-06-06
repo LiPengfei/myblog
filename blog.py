@@ -27,8 +27,8 @@ class Application(tornado.web.Application):
         handlers = [
             (r"/", HomeHandler),
             (r"/article/(.+)", ArticleHandler),
-            (r"/category/([^/.]+)", CategoryHandler),
-            (r"/category/([^/.]+)/([^/.]+)", SubCategoryHandler),
+            (r"/category/(.+)", CategoryHandler),
+            (r"/subcategory/([^/.]+)/([^/.]+)", SubCategoryHandler),
             (r"/archive/(\d+)", ArchiveHandler),
             (r"/update", UpdateHandler),
             (r"/comment", CommentHandler),

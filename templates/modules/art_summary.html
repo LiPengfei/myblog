@@ -14,7 +14,7 @@
     {% if article.has_key("aside") %}
     <aside> {% raw article["aside"] %} </aside>
     {% end %}
-    {% raw markdown(article["markdown"][0:400]) %}
+    {% raw markdown(article["markdown"][0:400])%}
     <footer>
         <p> <a href="/article/{% raw article["href"] %}"> <i>{% if article.has_key("comment") %}{% raw len(article["comment"]) %} {% else %} 0 {% end %} Comments</i></a> </p>
     </footer>
