@@ -484,7 +484,13 @@ class CommentHandler(BaseHandler):
 
 class ArtSummaryModule(tornado.web.UIModule):
     def render(self, article):
-        return self.render_string("modules/art_summary.html", article = article, markdown = markdown.markdown)
+        summary_letter_nums = 500
+        first_less_letter = article["markdown"].find("<")
+        if first_less_letter < summary_letter_nums :
+            summary_letter_nums = first_less_letter
+
+        content = markdown.markdown(article["markdown"][:summary_letter_nums])
+        return self.render_string("modules/art_summary.html", article = article, content=content)
 
 class CommentModule(tornado.web.UIModule):
     def render(self, comment, floor):
