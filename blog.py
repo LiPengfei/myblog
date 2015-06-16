@@ -486,7 +486,7 @@ class ArtSummaryModule(tornado.web.UIModule):
     def render(self, article):
         summary_letter_nums = 500
         first_less_letter = article["markdown"].find("<")
-        if first_less_letter < summary_letter_nums :
+        if first_less_letter < summary_letter_nums and first_less_letter != -1 :
             summary_letter_nums = first_less_letter
 
         content = markdown.markdown(article["markdown"][:summary_letter_nums])
