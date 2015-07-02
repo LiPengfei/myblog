@@ -282,12 +282,12 @@ class ArticleHandler(BaseHandler):
             if articles[article_index]["href"] == url_input:
                 article = articles[article_index]
                 if article_index != 0 :
-                    previous_article = dict (
+                    next_article = dict (
                         href = articles[article_index - 1]["href"],
                         title = articles[article_index - 1]["title"]
                     )
                 if (article_index + 1) < article_nums :
-                    next_article = dict (
+                    previous_article = dict (
                         href = articles[article_index + 1]["href"],
                         title = articles[article_index + 1]["title"]
                     )
