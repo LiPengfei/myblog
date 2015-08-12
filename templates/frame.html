@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="{{ static_url("style.css") }}" type = "text/css">
         {% end %}
         <script src= "{{ static_url("funny.js") }}" type="text/javascript" charset="utf-8"></script>
-        <title>Woodenhouse Blog</title>
+        <title>{% block page_title %} Woodenhouse Blog {% end %}</title>
     </head>
     <body id = "index">
         <header id="page_header">

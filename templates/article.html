@@ -1,5 +1,7 @@
 {% extends frame.html %}
-
+{% block page_title %}
+    {% raw article["title"] %}
+{% end %}
 {% block signin%}
     {% raw signin %}
 {% end %}
