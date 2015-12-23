@@ -29,3 +29,6 @@
 
 *.swp
 *.swo
+
+setting.json
+logs/

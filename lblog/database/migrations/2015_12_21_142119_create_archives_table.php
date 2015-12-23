@@ -13,8 +13,10 @@ class CreateArchivesTable extends Migration
     public function up()
     {
         Schema::create('archives', function (Blueprint $table) {
-            $table->increments('id');
-            $table->timestamps();
+            $table->bigIncrements('id');
+            $table->integer('month');
+            $table->integer('year');
+            $table->unique(['year', 'month']);
         });
     }
 

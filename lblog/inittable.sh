@@ -3,9 +3,9 @@
 php artisan make:migration create_categories_table --create=categories
 php artisan make:migration create_subcategories_table --create=subcategories
 php artisan make:migration create_archives_table --create=archives
-php artisan make:migration create_articles_table --create=articles
 php artisan make:migration create_authors_table --create=authors
 php artisan make:migration create_users_table --create=users
+php artisan make:migration create_articles_table --create=articles
 php artisan make:migration create_comments_table --create=comments
 
 # php artisan migrate
