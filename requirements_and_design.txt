@@ -23,3 +23,16 @@ author_tool.py    添加/删除一个author
 delete_article.py 删除一个blog
 delete_comment.py 删除一个comment
 delete_user.py    删除一个user
+
+
+laravel 移植计划
+tables
+
+category    { idkey, name:string }
+subcategory { idkey, name:string, parentId:int not null }
+archive     { idkey, year:int, month:int}
+article     { idkey, title:string, markdown:string, content:string, aside:string, ownerId:string fk author, categoryId:int fk category, subcategoryId:int fk subcategory, archiveId:int fk archive, time_stamp }
+author      { idkey, name:string unique, email:string, password:string, time_stamp }
+user        { idkey, name:string unique, email:string unique, time_stamp }
+comment     { idkey, content:string, ownerId:int fk user, articleId:int fk article, time_stamp }
+
