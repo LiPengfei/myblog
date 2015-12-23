@@ -17,7 +17,7 @@
         <header id="page_header">
             <div id = "logo">
                 <h1>Woodman's House! </h1>
-@section('signin')天街小雨润如酥，草色遥看近却无 @show
+                <p>@section('signin') 天街小雨润如酥，草色遥看近却无 @show</p>
                 <nav>
                     <ul>
                         <li><a href="/">最近发表</a></li>
@@ -30,7 +30,56 @@
                 </nav>
             </div>
         </header>
-@section('sidebar') TODO @show
+@section('sidebar')
+        @if(!empty($sidebar)
+        <nav>
+            <h3>Categories</h3>
+            <ul>
+                @if (!empty($sidebar['category']))
+                @forelse($sidebar['category'] as $category) 
+                <li>
+                    <a href= "/category/{{$category["name"]}}">
+                        {{$category["name"]}}（{{count($category->articles)}}）
+                    </a>
+                    @if(!empty($category->subcategories))
+                    <ul>
+                        @forelse($category->subcategories as subcategory) 
+                        <li>
+                            <a href= "/subcategory/{{$category["name"]}}^^{{$subcategory["name"]}}">
+                                {{$subcategory["name"]}}（{{count($subcategory->articles)}}）
+                            </a>
+                        </li>
+                        @empty
+                            TODO
+                        @endforelse
+                    </ul>
+                    @endif
+                </li>
+                @empty
+                    TODO
+                @endforelse
+                @endif
+            </ul>
+        </nav>
+        <nav>
+            <h3>Archives</h3>
+            <ul>
+                @if (!empty($sidebar['archive']))
+                @forelse($sidebar['archive'] as $archive) 
+                <li>
+                    <a href= "/archive/{{sprintf('%d%d', $archive['year'], $archive['month'])}}">
+                        {{sprintf('%d/%02d', $archive["year"], $archive["month"])}}（{{ len(archive["article"]) }}）
+                    </a>
+                </li>
+                @empty
+                    TODO
+                @endforelse
+                @endif
+            </ul>
+        </nav>
+        @endif
+    </section>
+@show
 
 @yield('content')
         <footer id = "body_footer">
