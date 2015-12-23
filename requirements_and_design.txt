@@ -2,7 +2,8 @@ futures
 markdown
 tornado
 pymongo
-bcrypt
+bcrypt wget https://pypi.python.org/packages/source/p/python-bcrypt/python-bcrypt-0.3.1.zip#md5=b73269b7bc85e5b5381965abdc43ff66
+/usr/bin/dnf install python-devel
 
 =================================================
 db design  需要安装mongodb

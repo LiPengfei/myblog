@@ -484,7 +484,7 @@ class CommentHandler(BaseHandler):
 
 class ArtSummaryModule(tornado.web.UIModule):
     def render(self, article):
-        summary_letter_nums = 500
+        summary_letter_nums = 800
         first_less_letter = article["markdown"].find("<")
         if first_less_letter < summary_letter_nums and first_less_letter != -1 :
             summary_letter_nums = first_less_letter
