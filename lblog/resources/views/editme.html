@@ -1,0 +1,24 @@
+﻿{% extends frame.html %}
+
+{% block sidebar %} {% end %}
+
+{% block content %}
+<section id="content">
+    <form action="/editme" method="post">
+        {% raw xsrf_form_html() %}
+        <fieldset>
+            <ol>
+                <li>
+                    <label for="article_title"> 标题：</label>
+                    <input size = "80" required="required" autocomplete="off" name="article_title" {% if article %} value ="{% raw article["title"] %}" {% end %}>
+                </li>
+                <li>
+                    <label for="article_content"> 正文：</label>
+                    <textarea required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >{{ article["markdown"] if article else "" }}</textarea>
+                </li>
+                <li><input type="submit" value="submit"></li>
+            </ol>
+        </fieldset>
+    </form>
+</section>
+{% end %}

@@ -1,0 +1,56 @@
+{% extends frame.html %}
+{# {% block sidebar %} {% end %} #}
+{% block content %}
+<section id="content">
+    <form action="/update" method="post">
+        {% raw xsrf_form_html() %}
+        <fieldset>
+            <ol>
+                <li>
+                    <label for="article_title"> 标题：</label>
+                    <input size = "80" required="required" autocomplete="off" name="article_title" {% if article %} value ="{% raw article["title"] %}" {% end %}>
+                </li>
+                <li>
+                    <label for="article_aside"> 旁白：</label>
+                    <textarea autocomplete="off" cols=80, rows=1 name="article_aside">{% raw article["aside"] if article else "" %}</textarea>
+                </li>
+                {% if is_old_article %}
+                <input type = "hidden" name="article_href" value = {% raw article["href"] %} />
+                {% else %}
+                <li>
+                    <label for="article_newhref"> 链接：</label>
+                    <input required="required" width= 60% name="article_newhref" />
+                </li>
+                {% end %}
+                {% if not is_old_article %}
+                <li>
+                    <label for="article_cat">大类：</label>
+                    <input name = "article_cat" type="text">
+                </li>
+                <li>
+                    <label for="article_subcat">小类：</label>
+                    <input name = "article_subcat" type="text">
+                </li>
+                {% end %}
+                <li>
+                    <label for="article_content"> 正文：</label>
+                    <textarea required = "required" autocomplete = "off" cols=80, rows=40 name="article_content" autofocus >{% raw article["markdown"] if article else "" %}</textarea>
+                </li>
+                <li><input type="submit" value="submit"></li>
+            </ol>
+        </fieldset>
+    </form>
+
+    <section id="comments">
+        {% if article and article.has_key("comment") %}
+        {% set article["comment"] = article["comment"][::-1] %}
+        {% set floor = len(article["comment"]) %}
+        <h3>留言</h3>
+        {% for comment in article["comment"] %}
+        {% module comment(comment, floor) %}
+        {% set floor = floor - 1 %}
+        {% end %}
+        {% end %}
+    </section>
+</section>
+{% end %}

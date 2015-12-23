@@ -1,0 +1,257 @@
+body {
+    width: 960px;
+    margin: 15px auto;
+    word-break:break-all;
+    word-wrap: break-word;
+    color: #333;
+    font-size: 14px;
+    font-family: Helvetica,arial,freesans,clean,sans-serif;
+}
+
+section#sidebar a, header a{
+    color: black;
+}
+
+footer {
+    margin-top: 50px;
+}
+section#sidebar a:hover, header a:hover {
+    color: gray;
+    text-decoration: none;
+}
+
+a {
+    color: #4183c4;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    margin: 20px 0 10px;
+    padding: 0;
+}
+
+h1 {
+    color: #000;
+    font-size: 28px;
+}
+h2 {
+    color: #000;
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+h5 {
+    font-size: 14px;
+}
+h6 {
+    color: #777;
+    font-size: 14px;
+}
+body > h2:first-child, body > h1:first-child, body > h1:first-child + h2, body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p {
+    margin-top: 10px;
+}
+
+pre, code{
+    font-family: Consolas,"Liberation Mono",Courier,monospace;
+    font-size: 12px;
+}
+code{
+    background-color: #f8f8f8;
+    border: 1px solid #eaeaea;
+    border-radius: 3px;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+pre > code {
+    background: none repeat scroll 0 0 transparent;
+    border: medium none;
+    margin: 0;
+    padding: 0;
+    white-space: pre;
+}
+pre {
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 19px;
+    overflow: auto;
+    padding: 6px 10px;
+}
+pre code{
+    background-color: transparent;
+    border: medium none;
+}
+
+p {
+    margin: 0 0 20px 0;
+}
+
+p, li {
+    line-height: 20px;
+}
+
+body header#page_header, footer#page_footer {
+    float: left;
+    width: 100%;
+}
+
+footer#page_footer {
+    text-align:center;
+    width: 100%;
+}
+
+header#page_header nav ul, footer#page_footer nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+section#posts header ul, section#content header ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+section#posts header ul li, section#content footer ul li, section#page_header nav ul li {
+    padding: 0;
+    margin: 0 20px 0 0;
+    display: inline;
+}
+
+header#page_header nav ul li, footer#page_footer nav ul li {
+    padding: 0;
+    margin: 0 20px 0 0;
+    display: inline;
+}
+
+div#logo h1 {
+    float: left;
+}
+
+div#logo p {
+    float: left;
+    padding-top: 25px;
+    line-height: 35px;
+    margin-left: 10px;
+}
+
+div#logo nav {
+    float: left;
+    width: 100%;
+}
+
+section#posts {
+    margin-top: 30px;
+    float: left;
+    width: 74%;
+}
+
+section#content {
+    margin-top: 30px;
+    float: left;
+    width: 74%;
+}
+
+section#read_guide {
+    float: left;
+    width: 20%;
+}
+
+li#previous_article {
+    float: left;
+    text-align: right;
+    width: 40%;
+}
+
+li#go_home {
+    float: left;
+    text-align: center;
+}
+
+section#posts aside, section#content aside {
+    float: right;
+    width: 35%;
+    font-size: 20px;
+    line-height: 40px;
+}
+
+section#sidebar {
+    margin-top: 30px;
+    float: right;
+    width: 20%;
+}
+
+section#sidebar ul li ul{
+    margin-left: -20px;
+}
+
+section#sidebar ul li a{
+    line-height: 25px;
+    text-decoration: blink;
+}
+
+section#content {
+    margin-top: 30px;
+}
+
+footer#page_footer {
+    margin-top: 20px;
+}
+
+article.comment {
+    margin-bottom: 30px;
+}
+section#comments {
+    margin-top: 40px;
+}
+
+p.commenter {
+    color: gray;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    text-align: right;
+}
+
+fieldset ol {
+    list-style: none;
+    padding: 0;
+    margin: 20px;
+}
+
+fieldset ol li {
+    margin: 0 0 9px 0;
+    padding: 0;
+}
+fieldset input, fieldset textarea{
+    display: block;
+}
+
+ol#update_select li{
+    display: inline;
+}
+
+ol#update_select input, ol#update_select select, ol#update_new input {
+    display: inline;
+    margin-right: 20px;
+}
+
+footer#body_footer {
+margin-top: 40px;
+float: left;
+width: 100%;
+}

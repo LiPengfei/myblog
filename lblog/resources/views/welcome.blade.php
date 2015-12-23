@@ -1,17 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
-    <title>WoodenHouse!</title>
-</head>
+@extents('farme')
+
+@section('exten_css_js')
+<script src= "{{ asset('app/js/jquery.js') }}" type="text/javascript" charset="utf-8"></script>
+@stop
+
+@section('page_title')
+Come on! Boy!
+@stop
+
 @include('editor::head')
 
-<body>
-
+@section('content')
 <div class="editor">
     <textarea id="myEditor" name="content"></textarea>
 </div>
-
-</body>
-</html>
+@stop

@@ -1,0 +1,29 @@
+{% extends frame.html %}
+
+{% block css_file %}
+<link rel="stylesheet" href= "{{ static_url("me.css") }}" type = "text/css">
+{% end %}
+
+{% block sidebar %} {% end %}
+
+{% block signin%}
+    {% raw signin %}
+{% end %}
+
+{% block content %}
+<section id = "content">
+    <header>
+    </header>
+    <article class="post">
+        {# <header>
+             <h2>{% raw article["title"] %}</h2>
+        </header> #}
+        {% raw article["content"] %}
+        <footer>
+            {% if current_user %}
+            <p> <a href="/editme"> <i> Edit</i></a> </p>
+            {% end %}
+        </footer>
+    </article>
+</section>
+{% end %}

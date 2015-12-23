@@ -1,0 +1,30 @@
+{% extends frame.html %}
+{% block sidebar %} {% end %}
+
+{% block content %}
+<section id="content">
+    <p>
+        {% if tip != None %}
+        {{ tip }}
+        {% end %}
+    </p>
+    <form action="/auth/login" method="post">
+        {% raw xsrf_form_html() %}
+        <fieldset>
+            <ol>
+                <li>
+                    <label for="author_name">user:</label>
+                    <input name = "author_name" type="text"/>
+                </li>
+                <li>
+                    <label for="author_password">password:</label>
+                    <input name = "author_password" type="password"/>
+                </li>
+                <li>
+                    <input type="submit"/ value="登陆"/>
+                </li>
+            </ol>
+        </fieldset>
+    </form>
+</section>
+{% end %}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+		@section('sidebar')
+        <link rel="stylesheet" href="{{ asset('app/css/style.css') }}" type = "text/css">
+		@show
+        <script src= "{{ asset('app/js/funny.js') }}" type="text/javascript" charset="utf-8"></script>
+
+		<title>
+			@section('page_title')
+			Woodenhouse Blog @show
+		</title>
+
+    </head>
+    <body id = "index">
+        <header id="page_header">
+            <div id = "logo">
+                <h1>Woodman's House! </h1>
+                <p>{% block signin %} 天街小雨润如酥，草色遥看近却无 {% end %}</p>
+                <nav>
+                    <ul>
+                        <li><a href="/">最近发表</a></li>
+                        <li><a href="/me">个人简历</a></li>
+                        {% if current_user %}
+                        <li><a href="/update">New Post</a></li>
+                        <li><a href="/auth/logout?next={{ url_escape(request.uri) }}">Sign Out</a></li>
+                        {% end %}
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        {% block sidebar %}
+        <section id="sidebar">
+            <nav>
+                <h3>Categories</h3>
+                <ul>
+                    {% for category in sidebar["category"] %}
+                    <li>
+                        <a href= "/category/{% raw category["name"] %}">
+                            {% raw category["name"] %}
+                            {% if category.has_key("article") %}
+                            （{% raw len(category["article"]) %}）
+                            {% end %}
+                        </a>
+                        {% if category.has_key("sub") %}
+                        <ul>
+                            {% for subcat_id in category["sub"] %}
+                            <li>
+                                <a href= "/subcategory/{% raw category["name"] %}/{% raw sidebar["subcategory"][subcat_id]["name"] %}">
+                                    {% raw sidebar["subcategory"][subcat_id]["name"] %}
+                                    {% if sidebar["subcategory"][subcat_id].has_key("article") %}
+                                    （{% raw len(sidebar["subcategory"][subcat_id]["article"]) %}）
+                                    {% end %}
+                                </a>
+                            </li>
+                            {% end %}
+                        </ul>
+                        {% end %}
+                    </li>
+                    {% end %}
+                </ul>
+            </nav>
+            <nav>
+                <h3>Archives</h3>
+                <ul>
+                    {% for archive in sidebar["archive"] %}
+                    <li>
+                        <a href= "/archive/{% raw archive["year"] %}{% raw archive["month"] %}">
+                            {% if archive["month"] < 10 %}
+                            {% raw archive["year"] %}/0{% raw archive["month"] %}
+                            {% else %}
+                            {% raw archive["year"] %}/{% raw archive["month"] %}
+                            {% end %}
+                            （{{ len(archive["article"]) }}）
+                        </a>
+                    </li>
+                    {% end %}
+                </ul>
+            </nav>
+        </section>
+        {% end %}
+
+        {% block content %} {% end %}
+        <footer id = "body_footer">
+            <p>联系方式：lipengfei519@hotmail.com</p>
+        </footer>
+    </body>
+</html>
